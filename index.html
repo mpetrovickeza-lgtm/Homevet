@@ -1,0 +1,2218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HomeVet Knowledge Base</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+.header { 
+  text-align: center; 
+  color: white; 
+  margin-bottom: 30px;
+  padding: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+.header h1 { font-size: 2.5em; margin-bottom: 10px; }
+.search-box {
+  margin: 20px 0;
+  position: relative;
+}
+.search-box input {
+  width: 100%;
+  padding: 15px 50px 15px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.tab {
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.9);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+.tab:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+.tab.active { background: white; box-shadow: 0 6px 20px rgba(0,0,0,0.3); }
+.card {
+  background: white;
+  border-radius: 15px;
+  margin: 15px 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+.card-header {
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+.card-icon { font-size: 2em; }
+.card-title { font-size: 1.4em; font-weight: 700; color: #2d3748; }
+.card-badge { 
+  font-size: 0.85em; 
+  color: #718096; 
+  margin-top: 5px;
+}
+.card-arrow {
+  margin-left: auto;
+  font-size: 1.5em;
+  transition: transform 0.3s;
+}
+.card.open .card-arrow { transform: rotate(180deg); }
+.card-body {
+  display: none;
+  padding: 20px;
+}
+.card.open .card-body { display: block; }
+.section {
+  margin: 20px 0;
+}
+.section-title {
+  font-size: 1.2em;
+  font-weight: 700;
+  margin-bottom: 15px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  background: #f7fafc;
+}
+.item {
+  display: flex;
+  gap: 12px;
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+.item-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+.dot-green { background: #10b981; }
+.dot-blue { background: #3b82f6; }
+.dot-orange { background: #f59e0b; }
+.dot-red { background: #ef4444; }
+.dot-purple { background: #8b5cf6; }
+.dot-cyan { background: #06b6d4; }
+.item-name { font-weight: 600; color: #1f2937; }
+.item-detail { color: #6b7280; margin-top: 5px; font-size: 0.95em; }
+.dose-tag {
+  display: inline-block;
+  background: #dbeafe;
+  color: #1e40af;
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-weight: 600;
+  font-size: 0.85em;
+  margin-left: 8px;
+}
+.alert-box {
+  background: #fef2f2;
+  border-left: 4px solid #ef4444;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  color: #991b1b;
+}
+.tip-box {
+  background: #f0fdf4;
+  border-left: 4px solid #10b981;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  color: #065f46;
+}
+.ref-box {
+  background: #eff6ff;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  font-size: 0.9em;
+  color: #1e40af;
+}
+.ref-label {
+  font-weight: 700;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Subcard styling for nested sections */
+.subcard {
+  margin: 15px 0;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background: #f8f9fa;
+  overflow: hidden;
+}
+.subcard-header {
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  user-select: none;
+  transition: all 0.3s ease;
+}
+.subcard-header:hover {
+  background: linear-gradient(135deg, #5568d3 0%, #6a3f8f 100%);
+  transform: translateX(3px);
+}
+.subcard-icon { font-size: 1.3em; }
+.subcard-title {
+  flex: 1;
+  font-weight: 600;
+  font-size: 1.05em;
+}
+.subcard-arrow {
+  font-size: 1.2em;
+  transition: transform 0.3s ease;
+}
+.subcard-header.expanded .subcard-arrow {
+  transform: rotate(90deg);
+}
+.subcard-body {
+  padding: 20px;
+  background: white;
+  border-top: 2px solid rgba(102, 126, 234, 0.3);
+}
+.subcard-body .section {
+  margin-bottom: 20px;
+}
+.subcard-body .section:last-child {
+  margin-bottom: 0;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>🏠 HomeVet Knowledge Base</h1>
+    <p>Field Veterinary Practice Reference</p>
+  </div>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="🔍 Search by symptom, drug, or procedure...">
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-filter="all">All</button>
+    <button class="tab" data-filter="exam">Examination</button>
+    <button class="tab" data-filter="clinical">Clinical Reasoning</button>
+    <button class="tab" data-filter="drugs">Drugs & Treatment</button>
+    <button class="tab" data-filter="diagnostics">Diagnostics</button>
+    <button class="tab" data-filter="prevention">Prevention</button>
+  </div>
+
+  <div class="cards">
+
+<!-- CATEGORY: EXAMINATION -->
+<div class="card" data-category="exam">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🩺</div>
+    <div>
+      <div class="card-title">General Clinical Examination</div>
+      <div class="card-badge">Complete Head-to-Tail Protocol</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    
+    <div class="section">
+      <div class="section-title">Exam Order (Always Follow)</div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">1. Signalment & History</div><div class="item-detail">Age, breed, sex, reproductive status, chief complaint</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">2. General Appearance (GA)</div><div class="item-detail">Observe from distance before handling · Mentation, BCS, posture, gait</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">3. Vital Signs (TPR)</div><div class="item-detail">Weight, temperature, pulse, respiration, MM/CRT</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">4. Systems Exam (Head to Tail)</div><div class="item-detail">EENT → CV → RESP → ABD → GU → PLN → INTEG → M/S → NERV</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">TPR Normal Ranges</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Temperature</div><div class="item-detail">Dog: 38–39.2°C (100.5–102.5°F) · Cat: 38–39.2°C · &lt;99°F or &gt;105°F → SUPERVISOR!</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Pulse (femoral artery)</div><div class="item-detail">Dog: 80–160 bpm · Cat: 110–200 bpm · Check strength (strong/weak/thready/bounding)</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Respiration</div><div class="item-detail">Dog: 15–30 breaths/min · Cat: 20–40 breaths/min · Count visually or by auscultation</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Capillary Refill Time (CRT)</div><div class="item-detail">Normal &lt; 2 sec · Press gum, release, count seconds to return to pink</div></div></div>
+    </div>
+    
+    <div class="section">
+      <div class="section-title">Dehydration Assessment</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">0–5% – Adequate</div><div class="item-detail">Skin snaps back immediately · CRT normal · MM pink and moist</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">5–8% – Marginal</div><div class="item-detail">Slight delay 2–4 sec skin return · CRT ~2 sec · Eyes slightly sunken · MM slightly dry</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">8–10% – Obvious</div><div class="item-detail">Delay 5–10 sec skin return · CRT 2–2.5 sec · Eyes sunken · MM dry and tacky</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">10–12% – Severe</div><div class="item-detail">Skin stays tented 10–30 sec · CRT 3+ sec · Very sunken eyes · Depression, signs of shock</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">12–15% – Inadequate</div><div class="item-detail">Shock state · Death probable → IV FLUIDS EMERGENCY</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Mucous Membrane Colors</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Pink</div><div class="item-detail">Normal perfusion and oxygenation</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Pale/White</div><div class="item-detail">Anemia, poor perfusion, shock, blood loss, vasoconstriction</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Blue (Cyanotic)</div><div class="item-detail">Inadequate oxygenation (hypoxemia) → EMERGENCY</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Brick Red</div><div class="item-detail">Vasodilation – early shock, sepsis, fever, SIRS</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Yellow (Icteric)</div><div class="item-detail">Bilirubin accumulation – hepatic/biliary disorder or hemolysis</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Brown</div><div class="item-detail">Methemoglobinemia – acetaminophen toxicity in cats!</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Petechiae (red spots)</div><div class="item-detail">Coagulation disorder – platelet disorder, DIC, coagulation factor deficiency</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">EENT (Eyes, Ears, Nose, Throat)</div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Eyes</div><div class="item-detail">Size, position, discharge · Lids, conjunctiva, sclera, pupil (size/symmetry), cornea (clarity), lens · Note squinting, cloudiness, redness</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Ears</div><div class="item-detail">Carriage, position · Thickness/malleability of pinnae · Cleanliness of ear canals · Odor? Discharge?</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Nose & Nares</div><div class="item-detail">Symmetry, conformation, discharge (serous/purulent/hemorrhagic/mucoid)</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Mouth</div><div class="item-detail">Lips, MM color, teeth, hard/soft palate, tongue, pharynx, tonsils · Note odor, gingivitis, calculus</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Lymph Nodes (submandibular)</div><div class="item-detail">Palpate under jaw · Should be firm and freely moveable</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">CV (Cardiovascular) Auscultation</div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Cardiac Auscultation Sites</div><div class="item-detail">Left 4th–6th intercostal space (PMI/mitral) · Left 2nd–4th (pulmonic) · Left 3rd–5th mid-thorax (aortic) · Right 3rd–5th mid-thorax (tricuspid)</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Normal Heart Sounds</div><div class="item-detail">"Lub-Dub" · S1 (loud, long, low) = AV valve closure · S2 = semilunar valve closure</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Abnormal Findings</div><div class="item-detail">Arrhythmia · Murmur (swooshing sound) · Muffled sounds (fluid in chest?) · Gallop rhythm</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Heart Murmur Grading</div><div class="item-detail">1/6 = very soft · 2/6 = soft · 3/6 = moderate · 4/6 = loud · 5/6 = loud with thrill · 6/6 = heard off chest</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">RESP (Respiratory) Auscultation</div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Normal Sounds</div><div class="item-detail">Vesicular/bronchial – soft, breezy, rustling sounds</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Wheezes</div><div class="item-detail">High-pitched hissing on expiration – small airway disease (asthma)</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Rales/Crackles</div><div class="item-detail">Discontinuous, brief sounds on inspiration – fluid in lungs</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Dull Sounds</div><div class="item-detail">Pneumonia or consolidation</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Absent Sounds</div><div class="item-detail">Pleural effusion or space-occupying lesion</div></div></div>
+      <div class="tip-box"><strong>Respiratory Localization:</strong> Loud breathing = large airway (nose/trachea/larynx) · Inspiratory noise = extrathoracic (larynx) · Expiratory noise = intrathoracic trachea · Rapid/shallow = pleural space disease</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">ABD (Abdomen) Palpation</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Technique</div><div class="item-detail">1–2 hands, start at spine, move ventrally · Allow viscera to slip through fingers · Note organ size, location, fluid, gas, masses, pain</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Cranial Abdomen</div><div class="item-detail">Stomach, liver, spleen, pancreas area, small intestine</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Mid-Abdomen</div><div class="item-detail">Spleen, kidneys, small intestine</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Caudal Abdomen</div><div class="item-detail">Urinary bladder, prostate, uterus, colon, small intestine</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Key Organs</div><div class="item-detail">Liver: sharp edges (usually non-palpable) · Kidneys: right more cranial than left (non-palpable in dogs) · Bladder: pear-shaped (dog), spherical (cat)</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">GU (Genitourinary) & Perineum</div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Always Verify</div><div class="item-detail">Sex and reproductive status – don't trust client info!</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Perianal Area</div><div class="item-detail">Hair mats, hernias, feces, masses, discharge · Palpate anal sacs (dogs)</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Male</div><div class="item-detail">Prepuce/penis: discharge, inflammation, tumors · Expose penis, check for trauma · Testicles: symmetry, size, both descended?</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Female</div><div class="item-detail">Mammary glands: tumors, cysts, swelling, heat, discharge · Vulva: size, inflammation, discharge (blood/pus), polyps, tumors</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">PLN (Peripheral Lymph Nodes)</div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Palpate</div><div class="item-detail">Submandibular, prescapular, axillary, inguinal, popliteal</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Normal</div><div class="item-detail">Firm, freely moveable · Usually palpable: submandibular, prescapular, popliteal, inguinal</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Abnormal</div><div class="item-detail">Enlarged or asymmetric → infection, allergy, or neoplasia</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">INTEG (Integument) & M/S (Musculoskeletal)</div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Skin & Haircoat</div><div class="item-detail">Alopecia, masses, parasites (fleas/ticks/lice), dryness, excessive oil, matting</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Limbs & Joints</div><div class="item-detail">Palpate each limb/joint · Note swelling, pain, deformities, fractures, luxations, ROM, atrophy, crepitus · Assess weight-bearing</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Feet & Nails</div><div class="item-detail">Check condition, trim if needed</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Vertebral Column</div><div class="item-detail">Palpate for deviations and pain</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">BCS (Body Condition Score) 1–9</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">1–3 – Too Thin</div><div class="item-detail">Ribs easily visible</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">4–5 – Ideal</div><div class="item-detail">Ribs easily felt without fat layer</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">6–7 – Overweight</div><div class="item-detail">Ribs difficult to feel</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">8–9 – Obese</div><div class="item-detail">Cannot feel ribs at all</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Medical Abbreviations</div>
+      <div class="tip-box">
+        <strong>BAR</strong> = Bright, Alert, Responsive · <strong>QAR</strong> = Quiet, Alert, Responsive<br>
+        <strong>GA</strong> = General Appearance · <strong>INTEG</strong> = Integument<br>
+        <strong>EENT</strong> = Eyes, Ears, Nose, Throat · <strong>CV</strong> = Cardiovascular · <strong>RESP</strong> = Respiratory<br>
+        <strong>ABD</strong> = Abdomen · <strong>GU</strong> = Genitourinary · <strong>PLN</strong> = Peripheral Lymph Nodes<br>
+        <strong>M/S</strong> = Musculoskeletal · <strong>NERV</strong> = Neurological<br>
+        <strong>OS</strong> = Left eye · <strong>OD</strong> = Right eye · <strong>OU</strong> = Both eyes<br>
+        <strong>AS</strong> = Left ear · <strong>AD</strong> = Right ear · <strong>AU</strong> = Both ears
+      </div>
+    </div>
+    
+    <div class="ref-box">
+      <span class="ref-label">📚 Source</span>
+      Physical Examination Guide – RAVS Field Protocol (Student Reference Manual)
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY: CLINICAL REASONING -->
+<div class="card" data-category="clinical">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🤮</div>
+    <div>
+      <div class="card-title">Vomiting & Diarrhea</div>
+      <div class="card-badge">History → Exam → Differentials → Treatment</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    <div class="section">
+      <div class="section-title">History Questions</div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Duration</div><div class="item-detail">Acute (&lt;7 days) vs Chronic (&gt;14 days)?</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Character</div><div class="item-detail">Vomitus: food/bile/blood? · Stool: watery/mucoid/bloody?</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Diet</div><div class="item-detail">Changes? Garbage? Table scraps?</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Deworming status</div></div></div>
+    </div>
+
+    <div class="alert-box">
+      <strong>⚠️ EMERGENCY if:</strong> Blood in vomit/stool · Severe dehydration · Puppy &lt;6 months · Unproductive retching (GDV?) · Severe pain
+    </div>
+
+    <div class="section">
+      <div class="section-title">Differential Diagnosis</div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Acute V+D</div><div class="item-detail">Dietary indiscretion · Parasites · Viral (parvo in puppies) · Bacterial</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Vomiting only</div><div class="item-detail">Foreign body · Pancreatitis · Toxins · Kidney/liver disease</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Diarrhea only</div><div class="item-detail">Colitis · Giardia · Whipworms · Stress</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Hemorrhagic</div><div class="item-detail">Parvovirus · HGE · Foreign body · Coagulopathy</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Treatment Protocol</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">1. NPO 12–24h</div><div class="item-detail">Rest GI tract · Water in small amounts</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">2. Maropitant (Cerenia)</div><div class="item-detail">1 mg/kg SC/PO SID<div class="dose-tag">1 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">3. Metoclopramide (if no Cerenia)</div><div class="item-detail">0.2–0.5 mg/kg PO TID<div class="dose-tag">0.2–0.5 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">4. Probiotics</div><div class="item-detail">Start immediately</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">5. Bland diet after NPO</div><div class="item-detail">Boiled chicken + rice · Small frequent meals</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">6. SC fluids if &lt;8% dehydrated</div><div class="item-detail">LRS 20–40 ml/kg SC daily</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">When to Add Antibiotics</div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Metronidazole</div><div class="item-detail">15–25 mg/kg PO BID · For Giardia or anaerobic infection<div class="dose-tag">15–25 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Amoxicillin-clavulanate</div><div class="item-detail">12.5–25 mg/kg PO BID · Hemorrhagic or sepsis risk<div class="dose-tag">12.5–25 mg/kg</div></div></div></div>
+      <div class="tip-box">💡 Don't routinely use antibiotics for simple gastroenteritis!</div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Sources</span>
+      Vomiting and Diarrhea Management Protocol · 100 Top Consultations · Clinical Reasoning in Small Animal Practice
+    </div>
+  </div>
+</div>
+
+<div class="card" data-category="clinical">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">👁️</div>
+    <div>
+      <div class="card-title">Conjunctivitis</div>
+      <div class="card-badge">Red eye · Discharge · Treatment by cause</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    <div class="section">
+      <div class="section-title">History Questions</div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">One or both eyes?</div><div class="item-detail">Unilateral = trauma/foreign body · Bilateral = infection/allergy</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Discharge type</div><div class="item-detail">Serous (clear) · Mucoid (thick) · Purulent (pus)</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Squinting?</div><div class="item-detail">Pain indicator → check for ulcer!</div></div></div>
+    </div>
+
+    <div class="alert-box">
+      <strong>⚠️ ALWAYS fluorescein stain to rule out ulcer!</strong><br>
+      NEVER use steroids if ulcer present — causes perforation!
+    </div>
+
+    <div class="section">
+      <div class="section-title">Treatment — No Ulcer</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Triple antibiotic ointment</div><div class="item-detail">Neomycin-Polymyxin-Bacitracin TID-QID · 7–10 days</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Gentamicin ophthalmic</div><div class="item-detail">TID-QID · 7–10 days</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Treatment — WITH Ulcer</div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Ofloxacin drops</div><div class="item-detail">Every 4–6h · Best for infected ulcers</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Atropine 1%</div><div class="item-detail">1 drop BID-TID · Reduces pain</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">E-collar</div><div class="item-detail">MANDATORY to prevent rubbing</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Viral (FHV-1 in cats)</div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Famciclovir</div><div class="item-detail">Cat: 62.5 mg PO BID · 14–21 days<div class="dose-tag">62.5 mg/cat</div></div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Lysine</div><div class="item-detail">250–500 mg PO SID</div></div></div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Sources</span>
+      Drugs Used to Treat Conjunctivitis – Clinician's Brief · Assessing Canine Conjunctivitis
+    </div>
+  </div>
+</div>
+
+<div class="card" data-category="clinical">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🐕</div>
+    <div>
+      <div class="card-title">Pruritus & Skin Issues</div>
+      <div class="card-badge">Itching · Scratching · Pyoderma · Differentials</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    
+    <div class="section">
+      <div class="section-title">History Questions</div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Duration & onset</div><div class="item-detail">Acute (days-weeks) vs Chronic (months-years)? Sudden or gradual?</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Seasonality</div><div class="item-detail">Year-round (perennial) or seasonal? Summer = fleas, grass · Spring/summer = pollen · Oct-Feb = house dust mites</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Distribution</div><div class="item-detail">Where is the itch worst? Face? Paws? Dorsal rump? Belly?</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Signs of itch</div><div class="item-detail">Scratching · Rolling · Rubbing · Chewing · Licking · Head shaking · Scooting</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Previous treatments</div><div class="item-detail">What worked? What didn't? Steroids help? How long does relief last?</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Other animals affected?</div><div class="item-detail">If YES → contagious (scabies, Cheyletiella, dermatophytosis)</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Distribution Patterns → Differentials</div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Pinnal margins + elbows + hocks</div><div class="item-detail">Sarcoptes scabiei (scabies) — highly pruritic!</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Face + paws</div><div class="item-detail">Demodex · Food allergy · Atopic dermatitis</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Dorsal rump (tail base)</div><div class="item-detail">Flea allergy dermatitis (FAD)</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Axillae, groin, ventral (flexural areas)</div><div class="item-detail">Atopic dermatitis · Contact allergy · Malassezia</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Generalized/diffuse</div><div class="item-detail">Pyoderma · Scabies · Cheyletiella · Systemic disease</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Step-by-Step Diagnostic Approach</div>
+      <div class="alert-box">
+        <strong>RULE OF THUMB: Always rule out the 3 major causes first!</strong><br>
+        1. Ectoparasites (fleas, scabies, Cheyletiella, Demodex)<br>
+        2. Infections (bacterial pyoderma, Malassezia, dermatophytosis)<br>
+        3. Allergies (flea, food, environmental/atopic)
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">1. Rule Out Ectoparasites</div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Flea allergic dermatitis (FAD)</div><div class="item-detail">Dorsal rump itch · Flea dirt (black specks) · Erythema, papules, hair loss · Treat ALL in-contact animals + environment!</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Sarcoptes (scabies)</div><div class="item-detail">HIGHLY pruritic! · Pinnal-pedal reflex positive (scratch ear = hind leg scratches) · Skin scrapes (low sensitivity ~50%) · Contagious to humans!<div class="dose-tag">Trial treatment = best test</div></div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Cheyletiella ("walking dandruff")</div><div class="item-detail">Dorsal scaling · Mild-moderate itch · Visible mites on tape prep · Contagious</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Demodex</div><div class="item-detail">Face + paws · Usually NOT pruritic unless secondary pyoderma · Skin scrape to depth (capillary ooze)</div></div></div>
+      <div class="tip-box"><strong>Test:</strong> Coat brushing + tape prep (unstained) for fleas/Cheyletiella · Deep skin scrape for Sarcoptes/Demodex · Fecal flotation (cats) for Notoedres</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">2. Rule Out Infections</div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Bacterial pyoderma (Staphylococcus)</div><div class="item-detail">Papules, pustules, collarettes · Erythema · Moderate-severe itch · Cytology: cocci + neutrophils</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Malassezia dermatitis (yeast)</div><div class="item-detail">Greasy, smelly skin · Ventral/flexural areas · Cytology: budding yeasts (peanut-shaped)</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Dermatophytosis (ringworm)</div><div class="item-detail">Hair loss, scaling, crusts · Often NOT pruritic unless secondary infection · Wood's lamp (50% M. canis glow) · Fungal culture gold standard</div></div></div>
+      <div class="tip-box"><strong>Test:</strong> Impression smear or tape prep (stain with Diff-Quick) → look for cocci (bacteria), yeasts, inflammatory cells · DTM culture for ringworm</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">3. If Above Ruled Out → Allergic Dermatitis</div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Flea allergy dermatitis (FAD)</div><div class="item-detail">Strict flea control for 3 months (ALL animals + environment) · Use quality products (fipronil, selamectin, fluralaner)</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Food allergy</div><div class="item-detail">Novel protein diet trial (single protein + carb) for 8–12 weeks · No treats, no flavored meds! · If improves → food challenge to confirm</div></div></div>
+      <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Atopic dermatitis (environmental allergy)</div><div class="item-detail">Diagnosis of exclusion · Face, paws, ventral itch · Usually seasonal initially, becomes year-round · Steroid-responsive</div></div></div>
+      <div class="alert-box">
+        <strong>Key Clue for Allergies:</strong> Face, paws, axillae/groin distribution + good steroid response + no parasites/infection found = allergic dermatitis
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Treatment — Ectoparasites</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Fleas (FAD)</div><div class="item-detail">Fipronil spot-on monthly · Selamectin · Fluralaner (3 months duration) · Treat ALL animals + spray environment<div class="dose-tag">3 months minimum</div></div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Sarcoptes (scabies)</div><div class="item-detail">Ivermectin 0.2–0.4 mg/kg SC/PO every 14 days × 3–4 doses · OR Selamectin spot-on · Treat all in-contact dogs<div class="dose-tag">0.2–0.4 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Cheyletiella</div><div class="item-detail">Same as scabies treatment · Treat all in-contact animals</div></div></div>
+      <div class="alert-box"><strong>⚠️ CAUTION:</strong> Ivermectin TOXIC to Collies, Shelties, Australian Shepherds (MDR1 mutation)! Use selamectin or moxidectin instead</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Treatment — Infections</div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Superficial pyoderma</div><div class="item-detail">Cefalexin 22 mg/kg PO BID × 3–4 weeks OR Amoxicillin-clavulanate 12.5–25 mg/kg BID<div class="dose-tag">22 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Malassezia dermatitis</div><div class="item-detail">Ketoconazole 5–10 mg/kg PO SID × 3–4 weeks · Chlorhexidine/miconazole shampoo 2x/week<div class="dose-tag">5–10 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Dermatophytosis</div><div class="item-detail">Itraconazole 5–10 mg/kg PO SID × 4–6 weeks · Lime sulfur dips 2x/week · Treat until 2 negative cultures<div class="dose-tag">5–10 mg/kg</div></div></div></div>
+      <div class="tip-box">💡 Treat until 1 week PAST clinical resolution to prevent recurrence!</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Treatment — Allergic Dermatitis</div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Prednisolone (short-term)</div><div class="item-detail">Dog: 0.5–1 mg/kg PO SID × 7 days, then taper · Cat: 1–2 mg/kg SID<div class="dose-tag">0.5–1 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Oclacitinib (Apoquel)</div><div class="item-detail">Dog: 0.4–0.6 mg/kg PO BID × 14 days, then SID · Fast acting (works in 4 hours!)<div class="dose-tag">0.4–0.6 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Ciclosporin (Atopica)</div><div class="item-detail">Dog: 5 mg/kg PO SID · Cat: 7 mg/kg SID · Takes 4–6 weeks to work<div class="dose-tag">5 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Antihistamines (mild cases)</div><div class="item-detail">Cetirizine 1 mg/kg SID-BID · Loratadine 0.5 mg/kg SID · Variable efficacy (20–30%)</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Essential fatty acids (Omega-3/6)</div><div class="item-detail">Adjunctive therapy · Improves skin barrier · Takes 6–8 weeks</div></div></div>
+      <div class="tip-box">💡 <strong>Long-term management:</strong> Allergen-specific immunotherapy (allergy shots) is the ONLY disease-modifying treatment for atopic dermatitis. Consider referral for intradermal testing or serology.</div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Monitoring & Follow-up</div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Recheck in 2–3 weeks</div><div class="item-detail">Assess response to treatment · Adjust medications as needed</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">If not improving</div><div class="item-detail">Re-evaluate for missed parasites/infections · Consider skin biopsy · Refer to dermatologist</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Chronic cases</div><div class="item-detail">Lifelong management usually needed · Focus on quality of life · Set realistic expectations with owners</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Owner Instructions</div>
+      <div class="tip-box">
+        <strong>What to tell owners:</strong><br>
+        • Pruritus takes time to resolve — don't expect instant results<br>
+        • Treat ALL in-contact animals for parasites<br>
+        • Use flea prevention year-round (even indoor pets!)<br>
+        • Complete full antibiotic course even if skin looks better<br>
+        • Food trials require STRICT compliance — no treats, no table scraps<br>
+        • Allergies are usually lifelong — goal is management, not cure<br>
+        • E-collar may be needed to break itch-scratch cycle<br>
+        • Return if worsening or no improvement in 2–3 weeks
+      </div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Sources</span>
+      Clinical Reasoning in Small Animal Practice — Chapter 14: Pruritus and Scaling<br>
+      100 Top Consultations in Small Animal General Practice
+    </div>
+  </div>
+</div>
+
+
+
+<div class="card" data-category="clinical">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🚑</div>
+    <div>
+      <div class="card-title">Emergency Medicine: Shock & Fever</div>
+      <div class="card-badge">Shock Recognition · Fluid Therapy · Fever Workup · Critical Care</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    
+    <!-- SUBCARD 1: SHOCK RECOGNITION -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">⚡</span>
+        <span class="subcard-title">Shock Recognition & Types</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">What is Shock?</div>
+          <div class="alert-box"><strong>CRITICAL DEFINITION:</strong> Shock = inadequate perfusion of tissues → inadequate delivery of oxygen and nutrients → inadequate elimination of metabolic byproducts</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Common derangement</div><div class="item-detail">ALL forms of shock → inadequate tissue perfusion → cell death if not corrected</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Three Main Types of Shock</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">1. HYPOVOLEMIC SHOCK</div><div class="item-detail">Most common in small animals · Blood/fluid loss · Dehydration<div class="dose-tag">MOST COMMON</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">2. CARDIOGENIC SHOCK</div><div class="item-detail">Heart failure · Inadequate cardiac output · Arrhythmias</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">3. DISTRIBUTIVE SHOCK</div><div class="item-detail">Sepsis, anaphylaxis · Vasodilation · Maldistribution of blood flow</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Clinical Recognition - Key Signs</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Heart Rate</div><div class="item-detail">Usually INCREASED (150-200+ dogs, 200-260+ cats) · Tachycardia in most cases · Bradycardia = late, severe sign!</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Pulse Quality</div><div class="item-detail">WEAK, thready, or bounding · Poor peripheral pulses<div class="dose-tag">KEY SIGN!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Mucous Membranes (MM)</div><div class="item-detail">Pale, brick red (distributive), or cyanotic · Capillary refill time (CRT) >2 seconds</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Temperature</div><div class="item-detail">Cold extremities · Decreased rectal temp (early septic may have increased)</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Respiratory Rate</div><div class="item-detail">Increased (compensatory) · May be rapid/shallow · Anxiety</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Mentation</div><div class="item-detail">Dull, depressed, anxious · Weakness · Collapse</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Hypovolemic Shock - Specifics</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Causes</div><div class="item-detail">Hemorrhage (trauma, surgery, GI bleeding) · Dehydration (vomiting, diarrhea, polyuria)</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Signs</div><div class="item-detail">Pale MM · Weak pulses · Tachycardia · Cold extremities · Prolonged CRT</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Treatment priority</div><div class="item-detail">VOLUME RESUSCITATION with fluids · Stop hemorrhage if ongoing</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Distributive Shock (Septic) - Specifics</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Causes</div><div class="item-detail">Sepsis, SIRS, anaphylaxis · Widespread vasodilation</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Early signs ("warm shock")</div><div class="item-detail">BRICK RED MM · Bounding pulses · Hyperdynamic · Hyperthermia</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Late signs ("cold shock")</div><div class="item-detail">Pale MM · Weak pulses · Hypothermia · Looks like hypovolemic</div></div></div>
+          <div class="alert-box"><strong>Warning:</strong> Distributive shock from sepsis can LOOK like hypovolemic! BUT aggressive fluid therapy can be LETHAL in cardiogenic shock!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Cardiogenic Shock - Specifics</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Causes</div><div class="item-detail">Heart failure, arrhythmias, cardiac tamponade · Heart can't pump effectively</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Signs</div><div class="item-detail">Weak pulses · Pale/cyanotic MM · Pulmonary edema · Jugular distension · Arrhythmias</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">CRITICAL WARNING</div><div class="item-detail">DO NOT give aggressive fluids! Will worsen heart failure · Give cautiously<div class="dose-tag">⚠️ DANGER!</div></div></div></div>
+          <div class="alert-box"><strong>⚠️ Differentiate cardiogenic from hypovolemic BEFORE fluid bolus!</strong> Check for heart murmur, gallop, arrhythmia, pulmonary crackles</div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 2: SHOCK TREATMENT -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">💧</span>
+        <span class="subcard-title">Shock Treatment & Fluid Therapy</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Goals of Treatment</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Improve perfusion and oxygen delivery</div><div class="item-detail">Restore blood volume · Improve cardiac output</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Prevent complications</div><div class="item-detail">Hypoglycemia, hypercarbia, lactic acidosis, organ failure</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Treat underlying cause</div><div class="item-detail">Stop hemorrhage, control infection, address primary problem</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">ABC Approach to Shock</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Airway</div><div class="item-detail">Ensure patent airway · Intubate if needed</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Breathing</div><div class="item-detail">Supplemental oxygen · Positive pressure ventilation if needed</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Circulation</div><div class="item-detail">Fluid resuscitation · Control hemorrhage · Improve cardiac output</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Fluid Therapy - Types of Fluids</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">CRYSTALLOIDS (first-line)</div><div class="item-detail">0.9% NaCl or Lactated Ringer's · Cheap, readily available · Volume expanders<div class="dose-tag">FIRST CHOICE</div></div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">COLLOIDS</div><div class="item-detail">Hetastarch, dextran · Stay in intravascular space longer · Use if crystalloids fail</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">BLOOD PRODUCTS</div><div class="item-detail">Whole blood, packed RBCs, plasma · For hemorrhagic shock with severe anemia</div></div></div>
+          <div class="tip-box"><strong>Crystalloid choice:</strong> 0.9% NaCl = isotonic, good for most · LRS = contains lactate (metabolized to bicarbonate), good for acidosis · Avoid dextrose fluids for volume resuscitation!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Shock Doses - Crystalloids</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">DOG shock dose</div><div class="item-detail">90 ml/kg (one "shock dose") · Give over 15-30 minutes<div class="dose-tag">90 ml/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">CAT shock dose</div><div class="item-detail">60 ml/kg (one "shock dose") · Give over 15-30 minutes<div class="dose-tag">60 ml/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">How to give</div><div class="item-detail">Give 1/4 to 1/2 shock dose as bolus → Reassess → Repeat if needed · Do NOT give entire dose at once!</div></div></div>
+          <div class="alert-box"><strong>Example:</strong> 20kg dog in shock → shock dose = 1800ml · Give 450ml bolus over 10-15 min → Reassess (HR, pulse, MM, CRT) → Repeat if still in shock</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Fluid Resuscitation Protocol</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 1: Assess severity</div><div class="item-detail">Is patient in shock? Mild, moderate, severe?</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 2: IV catheter</div><div class="item-detail">Large bore peripheral (18-20G dogs, 22-24G cats) · Jugular if needed</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 3: Give initial bolus</div><div class="item-detail">1/4 shock dose over 10-15 minutes (22.5 ml/kg dogs, 15 ml/kg cats)</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 4: REASSESS!</div><div class="item-detail">HR, pulse quality, MM color, CRT, mentation · Check every 15 minutes<div class="dose-tag">CRITICAL!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 5: Repeat if needed</div><div class="item-detail">Give another 1/4 shock dose if still in shock · Reassess again · Up to full shock dose</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 6: Maintenance fluids</div><div class="item-detail">Once stabilized: 2-4 ml/kg/hr · Monitor urine output, hydration<div class="dose-tag">2-4 ml/kg/hr</div></div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Monitoring Response to Treatment</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Improving signs</div><div class="item-detail">HR decreases · Pulse quality improves · MM become pink · CRT normalizes · Mentation improves</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Parameters to monitor</div><div class="item-detail">HR, RR, pulse quality, MM, CRT, temperature, BP, urine output, lactate</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Urine output goal</div><div class="item-detail">1-2 ml/kg/hr = adequate renal perfusion</div></div></div>
+          <div class="alert-box"><strong>Warning signs of fluid overload:</strong> Increased RR, pulmonary crackles, chemosis, serous nasal discharge · STOP fluids!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Additional Supportive Care</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Oxygen supplementation</div><div class="item-detail">Nasal O2, flow-by, oxygen cage · Improves tissue oxygenation</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Keep warm</div><div class="item-detail">Blankets, warming pads · Hypothermia worsens shock</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Glucose supplementation</div><div class="item-detail">Maintain blood glucose 90-110 mg/dl · Dextrose bolus/CRI if hypoglycemic</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Treat underlying cause</div><div class="item-detail">Control hemorrhage · Antibiotics for sepsis · Surgery if needed</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">When to Refer</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Not responding to fluids</div><div class="item-detail">Given full shock dose but still in shock · Needs ICU care</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Cardiogenic shock</div><div class="item-detail">Needs specialized cardiac care · Echo, advanced monitoring</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Ongoing hemorrhage</div><div class="item-detail">Needs surgery to control bleeding</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Severe sepsis/septic shock</div><div class="item-detail">Needs intensive care, vasopressors, advanced support</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 3: FEVER ASSESSMENT -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🌡️</span>
+        <span class="subcard-title">Fever: Assessment & Diagnosis</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">What is Fever?</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Definition</div><div class="item-detail">Elevation above normal body temperature from resetting the hypothalamic thermoregulatory set point</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Normal temperatures</div><div class="item-detail">Dogs: 100-102.8°F (37.8-39.3°C) · Cats: 100-102.8°F (37.8-39.3°C)</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Fever definition</div><div class="item-detail">Fever of Unknown Origin (FUO) = >103.5°F (>39.7°C) on ≥4 occasions over 14-day period<div class="dose-tag">>103.5°F</div></div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Pathophysiology</div><div class="item-detail">Pyrogens (endogenous/exogenous) → release prostaglandins → reset hypothalamus to higher temperature</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Fever vs Hyperthermia - KEY Difference!</div>
+          <div class="alert-box"><strong>CRITICAL:</strong> Fever and hyperthermia are DIFFERENT! Treatment differs!</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">FEVER</div><div class="item-detail">Hypothalamic set point RAISED · Body generates heat · Responds to antipyretics (NSAIDs)</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">HYPERTHERMIA</div><div class="item-detail">Hypothalamic set point NORMAL · Excessive heat/inability to cool · Does NOT respond to antipyretics!<div class="dose-tag">DIFFERENT!</div></div></div></div>
+          <div class="tip-box"><strong>Hyperthermia causes:</strong> Heat stroke, seizures, excessive exercise · Temp >104-107°F · Treat with cooling, NOT drugs!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Clinical Signs of Fever</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">General signs</div><div class="item-detail">Lethargy · Inappetence · Depression · Tachycardia · Hyperpnea · Dehydration</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Physical exam</div><div class="item-detail">Hot to touch · May have shivering/shaking · Check ears, paw pads</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Temperature thresholds</div><div class="item-detail">103-105°F = moderate fever · >105°F = high fever (serious!) · >106°F = life-threatening</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Most Common Causes of Fever</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">INFECTIOUS (MOST COMMON!)</div><div class="item-detail">Bacteria, viruses, parasites, fungi · Abscesses, pneumonia, pyometra, sepsis<div class="dose-tag">#1 CAUSE</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Immune-mediated</div><div class="item-detail">IMHA, IMT, polyarthritis, vasculitis, SLE</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Neoplasia</div><div class="item-detail">Lymphoma, leukemia, solid tumors · Especially with necrosis</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Inflammatory</div><div class="item-detail">Pancreatitis, hepatitis, IBD, granulomatous disease</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Drugs/toxins</div><div class="item-detail">Tetracycline, sulfonamides, penicillins, certain toxins</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostic Approach to Fever</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">History</div><div class="item-detail">Duration, travel history, tick exposure, recent vaccination, drug administration</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Physical exam</div><div class="item-detail">THOROUGH! Check lymph nodes, heart, lungs, abdomen, joints, oral cavity, rectal</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Minimum database</div><div class="item-detail">CBC, biochemistry, urinalysis · Look for infection, inflammation, organ dysfunction</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Additional tests (as indicated)</div><div class="item-detail">Blood cultures · Urine culture · FeLV/FIV · Tick titers · Imaging · Aspirates/biopsies</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">CBC/Biochemistry Findings</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Leukocytosis</div><div class="item-detail">Left shift = bacterial infection likely · Neutrophilia common</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Leukopenia</div><div class="item-detail">Overwhelming infection, bone marrow disease, parvovirus</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Thrombocytopenia</div><div class="item-detail">Sepsis, tick-borne disease, DIC, immune-mediated</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Elevated liver enzymes</div><div class="item-detail">Hepatitis, cholangiohepatitis, sepsis</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 4: FEVER TREATMENT -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">💊</span>
+        <span class="subcard-title">Fever Treatment</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Goals of Treatment</div>
+          <div class="alert-box"><strong>Goal:</strong> Reset thermoregulatory set point to lower level · Treat underlying cause · Support patient</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">When to treat fever</div><div class="item-detail">Only treat if: >105°F, patient life-threatened, impaired patient (heart/respiratory disease), or topical cooling unsuccessful</div></div></div>
+          <div class="tip-box"><strong>Fever may be HELPFUL!</strong> Suppresses bacterial replication, facilitates immune response · Don't treat mild fevers unless necessary</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Supportive Care</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Rest activity</div><div class="item-detail">Reduce metabolic demands</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Hydration</div><div class="item-detail">Febrile patients lose water · Fluid therapy (IV or SC) essential</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Nutrition</div><div class="item-detail">High caloric intake needed · Hypercatabolic state</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Topical cooling</div><div class="item-detail">Use for very high fever (>106°F) · Fans, cool water, ice packs (avoid extremes)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Antipyretics - NSAIDs</div>
+          <div class="alert-box"><strong>⚠️ Only use if infectious causes ruled out OR antibiotics started!</strong> Don't use corticosteroids unless non-infectious!</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Carprofen (Rimadyl)</div><div class="item-detail">Dogs: 2-4 mg/kg PO BID · Cats: NOT RECOMMENDED<div class="dose-tag">Dogs: 2-4 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Meloxicam</div><div class="item-detail">Dogs: 0.1-0.2 mg/kg PO SID · Cats: 0.05-0.1 mg/kg PO SID (use cautiously!)<div class="dose-tag">0.1-0.2 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Robenacoxib (Onsior)</div><div class="item-detail">Dogs: 1-2 mg/kg PO SID · Cats: 1 mg/kg PO SID<div class="dose-tag">1-2 mg/kg</div></div></div></div>
+          <div class="tip-box"><strong>Side effects:</strong> GI upset (vomiting, diarrhea), GI ulceration, renal damage · Use cautiously in dehydrated patients!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Antibiotics</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">When to start</div><div class="item-detail">Start empirically if bacterial infection suspected · After cultures if possible</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Broad spectrum options</div><div class="item-detail">Amoxicillin-clavulanate, cephalosporins, fluoroquinolones · Based on suspected source</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Specific antibiotics</div><div class="item-detail">Cefalexin 20 mg/kg PO q8-12h · Enrofloxacin 5-10 mg/kg PO SID · Doxycycline 5 mg/kg PO BID<div class="dose-tag">Various</div></div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Duration</div><div class="item-detail">Continue >1-2 weeks if empiric · Adjust based on culture/response</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Corticosteroids - USE CAUTIOUSLY!</div>
+          <div class="alert-box"><strong>⚠️ DO NOT USE unless infectious causes ruled out!</strong> Will mask infection and worsen sepsis</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">When appropriate</div><div class="item-detail">Immune-mediated disease, certain neoplasia · AFTER ruling out infection</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Prednisolone</div><div class="item-detail">0.5-1 mg/kg PO BID for immune-mediated · NOT for routine fever!<div class="dose-tag">0.5-1 mg/kg</div></div></div></div>
+          <div class="tip-box">Corticosteroids controversial in fever management · May mask clinical signs · Lead to immunosuppression</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Monitoring</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Temperature checks</div><div class="item-detail">Monitor at least q12h · More frequently if severe</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Watch for complications</div><div class="item-detail">Seizures (>106°F), DIC, organ failure, nosocomial infection</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Response to treatment</div><div class="item-detail">If fever persists/worsens → reconsider diagnosis, repeat diagnostics</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">When to Refer</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Fever of unknown origin</div><div class="item-detail">Extensive workup fails to identify cause · Needs advanced diagnostics</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Not responding to treatment</div><div class="item-detail">Fever persists despite appropriate antibiotics/treatment</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Severe systemic illness</div><div class="item-detail">Septic, collapsed, organ failure · Needs ICU care</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Source</span>
+      Small Animal Medicine - Shock & Fever Management Protocols
+    </div>
+  </div>
+</div>
+
+
+<div class="card" data-category="clinical">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🫁</div>
+    <div>
+      <div class="card-title">Respiratory Disorders</div>
+      <div class="card-badge">Cough · Dyspnea · Nasal Discharge · Epistaxis · Cyanosis</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    
+    <!-- SUBCARD 1: COUGH -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">😤</span>
+        <span class="subcard-title">Cough</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">What is a Cough?</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Definition</div><div class="item-detail">Sudden forceful expiration of air through glottis · Preceded by exaggerated inspiratory effort · Protective mechanism</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Mechanism</div><div class="item-detail">Stimulation of irritant receptors in pharynx/larynx/trachea/bronchi → vagus nerve → cough reflex</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Types of Cough - Clues to Cause</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Nocturnal cough</div><div class="item-detail">Left-sided CHF · Tracheal collapse · Pulmonary edema</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Exercise-induced cough</div><div class="item-detail">Early CHF · Tracheal collapse · Laryngeal disease</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Harsh, dry "honking" cough</div><div class="item-detail">Tracheal collapse (toy breeds) · Laryngeal disease · Infrequent = upper airway</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Moist, productive cough</div><div class="item-detail">Fluid/mucus in airways · Pneumonia · Pulmonary edema · Bronchitis</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Soft cough</div><div class="item-detail">No mucus/fluid production · Inflammation/irritation of larynx/trachea/bronchi</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Common Causes by Location</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Upper respiratory tract</div><div class="item-detail">Rhinitis, sinusitis, nasopharyngeal polyp/tumor, tonsillitis, laryngeal inflammation</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Tracheal</div><div class="item-detail">Tracheal collapse (toy breeds!), infectious tracheobronchitis (kennel cough), foreign body<div class="dose-tag">Toy breeds</div></div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Bronchial</div><div class="item-detail">Chronic bronchitis, allergic bronchitis, asthma (cats), foreign body, parasites</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Pulmonary/alveolar</div><div class="item-detail">Pneumonia, pulmonary edema (CHF), heartworm, fungal, aspiration, tumor</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Cardiovascular</div><div class="item-detail">Left-sided CHF (mitral valve disease), heartworm, pulmonary hypertension</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Most Common Causes (Field)</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Kennel cough (CIRDC)</div><div class="item-detail">Infectious tracheobronchitis · Harsh, dry cough · Recent boarding/exposure<div class="dose-tag">VERY COMMON</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Tracheal collapse</div><div class="item-detail">Toy breeds · "Goose honk" cough · Worse with excitement/exercise</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Chronic bronchitis</div><div class="item-detail">Chronic cough >2 months · Middle-aged/older dogs · Progressive</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Left-sided CHF</div><div class="item-detail">Older small breeds · Mitral valve disease · Nocturnal cough · Exercise intolerance</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Pneumonia</div><div class="item-detail">Moist cough · Fever · Lethargy · Crackles on auscultation</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostic Approach</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">History</div><div class="item-detail">Duration, character, timing, progression · Exposure to other dogs · Exercise tolerance</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Physical exam</div><div class="item-detail">Auscultation (heart murmur, crackles, wheezes) · Tracheal sensitivity · MM color</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Thoracic radiographs</div><div class="item-detail">ESSENTIAL! · 2 views minimum · Evaluate heart, lungs, trachea<div class="dose-tag">CRITICAL</div></div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Additional tests</div><div class="item-detail">Heartworm test · Tracheal wash/BAL · Echocardiogram · Fluoroscopy (tracheal collapse)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment - By Cause</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Kennel cough</div><div class="item-detail">Usually self-limiting · Doxycycline 5-10 mg/kg PO BID × 7-10 days · Cough suppressants if needed<div class="dose-tag">5-10 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Tracheal collapse</div><div class="item-detail">Weight loss · Cough suppressants · Avoid collars (use harness) · Sedation if severe episodes · Surgery for severe</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Chronic bronchitis</div><div class="item-detail">Weight loss · Pred 0.5-1 mg/kg PO BID then taper · Cough suppressants · Bronchodilators<div class="dose-tag">0.5-1 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">CHF</div><div class="item-detail">Furosemide, pimobendan, ACE inhibitors · Refer to cardiologist</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Pneumonia</div><div class="item-detail">Antibiotics (based on culture) · Nebulization · Coupage · Hospitalization if severe</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Cough Suppressants</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Butorphanol</div><div class="item-detail">0.55 mg/kg PO q6-12h · Narcotic · Very effective · Can cause sedation<div class="dose-tag">0.55 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Hydrocodone</div><div class="item-detail">0.22 mg/kg PO q6-12h · Narcotic · Controlled substance<div class="dose-tag">0.22 mg/kg</div></div></div></div>
+          <div class="alert-box"><strong>⚠️ Do NOT suppress productive cough (pneumonia)!</strong> Need to clear secretions</div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 2: DYSPNEA & RESPIRATORY DISTRESS -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">😮‍💨</span>
+        <span class="subcard-title">Dyspnea & Respiratory Distress</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Definition & Recognition</div>
+          <div class="alert-box"><strong>🚨 DYSPNEA = EMERGENCY!</strong> Distressful/labored breathing · Life-threatening condition · Act fast!</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Dyspnea</div><div class="item-detail">Difficult or labored breathing · Appears uncomfortable · May be rapid OR slow</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Tachypnea</div><div class="item-detail">Rapid breathing (>40/min dogs, >50/min cats) · May or may not be distressed</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Clinical Signs - What to Look For</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Increased effort</div><div class="item-detail">Abdominal breathing · Extended neck · Open mouth breathing · Nostril flaring</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Orthopnea</div><div class="item-detail">Refuses to lie down · Sits/stands with elbows out · "Prayer position"</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Cyanosis</div><div class="item-detail">Blue/purple mucous membranes · SEVERE hypoxia · CRITICAL!<div class="dose-tag">EMERGENCY!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Anxiety/restlessness</div><div class="item-detail">Pacing, can't get comfortable · Panicked expression</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Causes - Upper Airway</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Brachycephalic syndrome</div><div class="item-detail">Stenotic nares, elongated soft palate, laryngeal edema · Bulldogs, pugs, Boston terriers</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Laryngeal paralysis</div><div class="item-detail">Large breed older dogs · Inspiratory stridor · Exercise intolerance · Roaring sound</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Tracheal collapse</div><div class="item-detail">Toy breeds · "Goose honk" cough · Worse with excitement</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Foreign body</div><div class="item-detail">Acute onset · Coughing, gagging · Partial or complete obstruction</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Causes - Lower Airway/Lung</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Pneumonia</div><div class="item-detail">Bacterial, aspiration, fungal · Crackles · Fever · Productive cough</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Pulmonary edema</div><div class="item-detail">Cardiogenic (CHF) or non-cardiogenic · Pink frothy fluid · Crackles</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Pleural effusion</div><div class="item-detail">Dull lung sounds ventrally · Muffled heart sounds · Hypoproteinemia, CHF, pyothorax</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Pneumothorax</div><div class="item-detail">Trauma, spontaneous · Hyperresonant percussion · Decreased lung sounds</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Asthma (cats)</div><div class="item-detail">Feline allergic bronchitis · Wheezes · Expiratory difficulty</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Immediate Management - STABILIZE FIRST!</div>
+          <div class="alert-box"><strong>⚠️ MINIMIZE STRESS!</strong> Dyspneic animals decompensate rapidly with stress · Handle gently!</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Oxygen supplementation</div><div class="item-detail">Flow-by, oxygen cage, nasal O2 · FIRST priority!<div class="dose-tag">IMMEDIATE!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Minimize stress</div><div class="item-detail">Quiet room · Minimal handling · Let owner stay if calmer · Sedation if very anxious</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Cooling (if hyperthermic)</div><div class="item-detail">Fans, cool surfaces · Brachycephalics overheat easily</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Do NOT force restraint</div><div class="item-detail">No thoracic radiographs until stabilized! · May cause arrest</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Specific Treatments</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Pleural effusion</div><div class="item-detail">Thoracocentesis ASAP · Remove fluid · Improves breathing immediately<div class="dose-tag">Tap immediately!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Pulmonary edema (CHF)</div><div class="item-detail">Furosemide 2-4 mg/kg IV/IM · Pimobendan if available · Minimize stress<div class="dose-tag">2-4 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Pneumothorax</div><div class="item-detail">Thoracocentesis · Remove air · May need chest tube</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Feline asthma</div><div class="item-detail">Terbutaline 0.01 mg/kg SC · Prednisolone 1-2 mg/kg · Oxygen<div class="dose-tag">0.01 mg/kg</div></div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">When to Refer IMMEDIATELY</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Cyanosis</div><div class="item-detail">Blue mucous membranes = severe hypoxia · Needs ICU</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Not responding to oxygen</div><div class="item-detail">Still dyspneic despite supplementation · Needs ventilation</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Complete airway obstruction</div><div class="item-detail">Needs emergency intubation/tracheostomy</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Severe pleural effusion/pneumothorax</div><div class="item-detail">Rapid reaccumulation · Needs chest tube + hospitalization</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 3: NASAL DISCHARGE & SNEEZING -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">👃</span>
+        <span class="subcard-title">Nasal Discharge & Sneezing</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Types of Nasal Discharge</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Serous (clear, watery)</div><div class="item-detail">Early viral infection · Allergies · Mild irritation</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Mucoid (thick, clear)</div><div class="item-detail">Chronic inflammation · Allergic rhinitis</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Mucopurulent (yellow/green)</div><div class="item-detail">Bacterial or fungal infection · Chronic disease</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Hemorrhagic (blood-tinged)</div><div class="item-detail">Trauma, tumor, coagulopathy, foreign body, fungal (Aspergillosis)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Unilateral vs Bilateral - Key Difference!</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Unilateral discharge</div><div class="item-detail">Foreign body, tumor, tooth root abscess, fungal infection (Aspergillus)<div class="dose-tag">One nostril</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Bilateral discharge</div><div class="item-detail">Viral/bacterial infection, systemic disease, allergies<div class="dose-tag">Both nostrils</div></div></div></div>
+          <div class="tip-box"><strong>Pro tip:</strong> Unilateral = think LOCAL problem (FB, tumor, Aspergillus) · Bilateral = think SYSTEMIC</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Common Causes - Dogs</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Nasal aspergillosis</div><div class="item-detail">Young/middle-aged dogs · Chronic mucopurulent/hemorrhagic discharge · Often unilateral · Dolichocephalic breeds</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Nasal tumors</div><div class="item-detail">Older dogs · Progressive unilateral discharge · Facial deformity · Epistaxis</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Foreign body</div><div class="item-detail">Grass awns, sticks · Acute onset · Unilateral · Violent sneezing · Pawing at nose</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Bacterial rhinitis</div><div class="item-detail">Secondary to viral infection or dental disease · Bilateral mucopurulent</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Dental disease</div><div class="item-detail">Tooth root abscess (maxillary carnassial) · Oronasal fistula</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Common Causes - Cats</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Feline upper respiratory infection</div><div class="item-detail">Herpesvirus, calicivirus · Bilateral serous → mucopurulent · Sneezing · Conjunctivitis<div class="dose-tag">MOST COMMON</div></div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Chronic rhinosinusitis</div><div class="item-detail">After viral infection · Chronic nasal discharge · Poor response to antibiotics</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Nasal polyps</div><div class="item-detail">Young cats · Unilateral discharge · Stertor · Mass visible</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Cryptococcosis</div><div class="item-detail">Fungal · Chronic discharge · Nasal mass · Systemic signs</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostic Approach</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">History</div><div class="item-detail">Duration, character, uni/bilateral, progression · Recent URI? Trauma? Sneezing?</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Physical exam</div><div class="item-detail">Nasal airflow (feather test) · Facial symmetry · Lymph nodes · Oral exam (teeth, palate)</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Skull radiographs</div><div class="item-detail">Assess nasal turbinates · Look for lysis (tumor, fungal) · Open mouth view</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Advanced</div><div class="item-detail">CT scan (BEST!) · Rhinoscopy · Nasal flush/biopsy · Fungal culture/serology</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment - By Cause</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Bacterial rhinitis</div><div class="item-detail">Doxycycline 5-10 mg/kg PO BID × 2-4 weeks · Amoxicillin-clavulanate alternative<div class="dose-tag">5-10 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Aspergillosis (dogs)</div><div class="item-detail">Topical clotrimazole infusion · Systemic itraconazole · Specialized treatment</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Feline URI</div><div class="item-detail">Supportive care · L-lysine · Famciclovir (if herpes) · Nebulization · Clean face/nose</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Foreign body</div><div class="item-detail">Rhinoscopy removal · May need anesthesia</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Tumors</div><div class="item-detail">Refer for radiation therapy · Surgery rarely curative · Poor prognosis</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 4: EPISTAXIS (NOSEBLEED) -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🩸</span>
+        <span class="subcard-title">Epistaxis (Nosebleed)</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Definition & Causes</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Definition</div><div class="item-detail">Bleeding from the nose · Can be unilateral or bilateral</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Three main categories</div><div class="item-detail">1) Coagulopathy · 2) Space-occupying/destructive lesion · 3) Vascular/systemic disease</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Causes - Coagulopathy</div>
+          <div class="alert-box"><strong>Most common cause of bilateral epistaxis!</strong></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Thrombocytopenia</div><div class="item-detail">Immune-mediated (IMTP), tick-borne disease (Ehrlichia, RMSF), bone marrow disease, DIC</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Anticoagulant rodenticide</div><div class="item-detail">Warfarin, brodifacoum · Factor VII deficiency · Check coagulation times<div class="dose-tag">COMMON!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Hemophilia A/B</div><div class="item-detail">Congenital clotting factor deficiency · Young males</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">DIC</div><div class="item-detail">Disseminated intravascular coagulation · Multiple bleeding sites · Very sick</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Causes - Local/Destructive</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Nasal tumors</div><div class="item-detail">Adenocarcinoma, sarcoma · Older dogs · Progressive unilateral epistaxis · Facial deformity</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Nasal aspergillosis</div><div class="item-detail">Fungal · Destroys turbinates · Hemorrhagic discharge · Young/middle-aged dogs · Dolichocephalic</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Foreign body</div><div class="item-detail">Grass awn, stick · Acute onset · Violent sneezing · Trauma to mucosa</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Trauma</div><div class="item-detail">Blunt trauma to nose/face · Hit by car · Fight</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Causes - Systemic/Vascular</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Hypertension</div><div class="item-detail">Systemic hypertension · Kidney disease, hyperthyroidism (cats), hyperadrenocorticism</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Hyperviscosity</div><div class="item-detail">Multiple myeloma, Ehrlichia, polycythemia</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Vasculitis</div><div class="item-detail">Immune-mediated, rickettsial disease</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostic Approach</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">History</div><div class="item-detail">Uni/bilateral? Duration? Trauma? Rodenticide exposure? Other bleeding?</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Physical exam</div><div class="item-detail">Petechiae/ecchymoses? Retinal hemorrhages? Pale MM? Facial asymmetry?</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Minimum database</div><div class="item-detail">CBC (check platelets!), coagulation profile (PT/PTT), blood pressure<div class="dose-tag">ESSENTIAL!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Imaging</div><div class="item-detail">Thoracic radiographs (metastasis check) · Skull radiographs/CT · Rhinoscopy</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Emergency Treatment</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Keep calm!</div><div class="item-detail">Stress worsens bleeding · Quiet environment · Gentle handling</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Ice packs</div><div class="item-detail">Apply to nose/muzzle · Vasoconstriction · Helps slow bleeding</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Head elevated</div><div class="item-detail">Prevents blood aspiration · Keep head up</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">DO NOT pack nose</div><div class="item-detail">Causes more stress and bleeding · Aspiration risk</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Specific Treatments</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Rodenticide toxicity</div><div class="item-detail">Vitamin K1 2.5-5 mg/kg PO BID × 3-4 weeks · Plasma/blood transfusion if severe<div class="dose-tag">2.5-5 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Thrombocytopenia (IMTP)</div><div class="item-detail">Prednisolone 1-2 mg/kg PO BID · +/- azathioprine · Transfusion if severe<div class="dose-tag">1-2 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Hypertension</div><div class="item-detail">Amlodipine 0.05-0.2 mg/kg PO SID · Treat underlying cause<div class="dose-tag">0.05-0.2 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Aspergillosis/tumor</div><div class="item-detail">Refer for specialized treatment</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">When to Refer</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Severe/uncontrolled bleeding</div><div class="item-detail">Life-threatening hemorrhage · Needs transfusion + ICU</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Nasal tumor suspected</div><div class="item-detail">Needs CT/rhinoscopy/biopsy · Radiation therapy</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Not responding to treatment</div><div class="item-detail">Bleeding continues despite appropriate therapy</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 5: CYANOSIS (EMERGENCY!) -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">💙</span>
+        <span class="subcard-title">Cyanosis (EMERGENCY!)</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">What is Cyanosis?</div>
+          <div class="alert-box"><strong>🚨 CYANOSIS = LIFE-THREATENING EMERGENCY!</strong> Bluish discoloration of skin/mucous membranes · Severe hypoxia · Act immediately!</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Definition</div><div class="item-detail">Bluish discoloration from increased deoxygenated hemoglobin in blood (>5 g/dl)</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Pathophysiology</div><div class="item-detail">Central = arterial hypoxemia · Peripheral = venous blood pooling/poor circulation</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Central vs Peripheral Cyanosis</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Central cyanosis</div><div class="item-detail">Mucous membranes blue (tongue, gums) · Entire body · Low arterial oxygen · SEVERE!<div class="dose-tag">CRITICAL!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Peripheral cyanosis</div><div class="item-detail">Only extremities (paw pads, ears, tail) · Poor circulation · Central oxygen OK</div></div></div>
+          <div class="tip-box"><strong>Check mucous membranes!</strong> If MM are blue = central cyanosis = EMERGENCY!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Causes - Central Cyanosis</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Upper airway obstruction</div><div class="item-detail">Laryngeal paralysis, brachycephalic syndrome, foreign body, tracheal collapse (severe)</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Lower airway disease</div><div class="item-detail">Severe pneumonia, pulmonary edema, pleural effusion, pneumothorax</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Ventilation-perfusion mismatch</div><div class="item-detail">Pulmonary thromboembolism, severe heart disease</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Right-to-left cardiac shunt</div><div class="item-detail">Congenital heart defects · Tetralogy of Fallot · Reverse PDA</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Clinical Signs</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Blue/purple MM</div><div class="item-detail">Tongue, gums · Most obvious sign</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Severe dyspnea</div><div class="item-detail">Labored breathing · Open mouth · Extended neck</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Weakness/collapse</div><div class="item-detail">Cannot stand · Syncope possible</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Abnormal lung sounds</div><div class="item-detail">Stridor, crackles, wheezes, muffled · Depends on cause</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">IMMEDIATE Management</div>
+          <div class="alert-box"><strong>⚠️ OXYGEN NOW!</strong> This is a life-threatening emergency · Stabilize BEFORE diagnostics!</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Supplemental oxygen</div><div class="item-detail">Flow-by, oxygen cage, mask · HIGHEST priority!<div class="dose-tag">DO THIS FIRST!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Minimize stress</div><div class="item-detail">NO restraint · Quiet environment · Gentle handling · Sedation if very stressed</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Emergency treatments</div><div class="item-detail">Thoracocentesis (if effusion) · Bronchodilators (if bronchoconstriction) · Furosemide (if CHF)</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Intubation if needed</div><div class="item-detail">Complete airway obstruction · Severe laryngeal paralysis · Emergency tracheostomy</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostics (AFTER Stabilization!)</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Thoracic radiographs</div><div class="item-detail">ONLY after patient stabilized · Look for effusion, pneumothorax, masses, pneumonia</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Arterial blood gas</div><div class="item-detail">Measures PaO2 directly · Confirms hypoxemia</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Echocardiogram</div><div class="item-detail">If cardiac shunt suspected</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Prognosis & Referral</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">ALL cyanotic patients</div><div class="item-detail">Need emergency care · Refer to ER/ICU if not responding to oxygen</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Guarded prognosis</div><div class="item-detail">Depends on underlying cause · Severe hypoxia can cause organ damage</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Brain damage risk</div><div class="item-detail">Prolonged hypoxia → permanent neurologic damage possible</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Source</span>
+      Small Animal Medicine - Respiratory System Clinical Signs
+    </div>
+  </div>
+</div>
+
+<div class="card" data-category="clinical">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🍽️</div>
+    <div>
+      <div class="card-title">Gastrointestinal Disorders</div>
+      <div class="card-badge">Vomiting · Diarrhea · Appetite Changes · Weight Loss</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    
+    <!-- SUBCARD 1: VOMITING & REGURGITATION -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🤮</span>
+        <span class="subcard-title">Vomiting & Regurgitation</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Vomiting vs Regurgitation - KEY Differences</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">VOMITING</div><div class="item-detail">Active process · Retching · Abdominal contractions · Digested food/bile · AFTER eating (30+ min)</div></div></div>
+          <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">REGURGITATION</div><div class="item-detail">Passive · No retching · No effort · Undigested food · SOON after eating (<30 min) · Tube/sausage shape</div></div></div>
+          <div class="alert-box"><strong>Ask owner:</strong> "Does the dog retch/heave before bringing up food?" YES = vomit, NO = regurgitation</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Vomiting - When to Worry</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Mild (treat at home)</div><div class="item-detail">1-2 episodes · Eating well · Bright and alert · No blood · No systemic signs</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Moderate (needs vet attention)</div><div class="item-detail">Vomiting >1 day · Depressed · Not eating · Dehydrated</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Severe (URGENT!)</div><div class="item-detail">Blood in vomit · Abdominal pain · Bloated · Collapse · Toxin ingestion</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Common Causes of Vomiting</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Dietary indiscretion</div><div class="item-detail">Ate garbage, spoiled food, foreign object · Most common!</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">GI obstruction</div><div class="item-detail">Toys, bones, socks, corn cobs · Repeated vomiting · Abdominal pain</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Inflammatory bowel disease (IBD)</div><div class="item-detail">Chronic vomiting + diarrhea + weight loss</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Pancreatitis</div><div class="item-detail">Acute vomiting + abdominal pain + anorexia · High fat diet trigger</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Parvovirus</div><div class="item-detail">Young unvaccinated dogs · Bloody diarrhea + severe vomiting</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Toxins</div><div class="item-detail">Antifreeze, rat poison, chocolate, medications · History key!</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Organ failure</div><div class="item-detail">Kidney/liver disease · Chronic vomiting + weight loss + PU/PD</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Regurgitation - Causes</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Megaesophagus (most common)</div><div class="item-detail">Congenital (young dogs) or acquired · Dilated esophagus · Aspiration pneumonia risk</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Esophageal foreign body</div><div class="item-detail">Bone, stick, ball stuck in esophagus · Acute onset · Hypersalivation</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Esophageal stricture</div><div class="item-detail">After swallowing caustic substance · Progressive dysphagia</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Vascular ring anomaly</div><div class="item-detail">Young animals · Persistent right aortic arch (PRAA)</div></div></div>
+          <div class="tip-box">Breeds predisposed to megaesophagus: German Shepherd, Great Dane, Irish Setter, Labrador, Miniature Schnauzer</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostic Approach - Vomiting</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">History</div><div class="item-detail">Acute vs chronic · Frequency · Relation to eating · Foreign body ingestion · Toxin exposure</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Physical exam</div><div class="item-detail">Hydration status · Abdominal palpation (pain, foreign body, bloat) · Fever</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">CBC/Biochemistry</div><div class="item-detail">Check kidney/liver function · Electrolytes · Pancreatitis markers</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Imaging</div><div class="item-detail">Abdominal X-rays (foreign body, obstruction) · Ultrasound (pancreatitis, intussusception)</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Advanced</div><div class="item-detail">Endoscopy · Barium contrast study · Exploratory surgery</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment - Acute Vomiting</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Mild cases (at-home care)</div><div class="item-detail">Withhold food 12-24 hours · Water in small amounts · Bland diet (chicken + rice) × 2-3 days<div class="dose-tag">12-24 hr fast</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Maropitant (Cerenia)</div><div class="item-detail">1 mg/kg SC/PO SID · Best anti-vomiting drug · Safe, effective<div class="dose-tag">1 mg/kg SID</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Metoclopramide</div><div class="item-detail">0.2-0.5 mg/kg SC/PO TID-QID · Also increases GI motility<div class="dose-tag">0.2-0.5 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Fluid therapy</div><div class="item-detail">If dehydrated: SC fluids at home or IV fluids in clinic · Essential!</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Gastric protectants</div><div class="item-detail">Omeprazole 1 mg/kg PO SID · Famotidine 0.5 mg/kg PO BID<div class="dose-tag">Various</div></div></div></div>
+          <div class="alert-box"><strong>NEVER withhold water completely!</strong> Offer small amounts frequently to prevent dehydration</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment - Chronic Vomiting</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Find underlying cause!</div><div class="item-detail">Full diagnostic workup essential · Treat the cause, not just symptoms</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">IBD treatment</div><div class="item-detail">Hypoallergenic diet trial · Prednisolone 1 mg/kg SID then taper<div class="dose-tag">1 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Pancreatitis management</div><div class="item-detail">NPO initially · IV fluids · Maropitant · Pain control (buprenorphine) · Low-fat diet long-term</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 2: DIARRHEA & GI BLEEDING -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">💩</span>
+        <span class="subcard-title">Diarrhea & GI Bleeding</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Dyschezia vs Hematochezia - Definitions</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Dyschezia</div><div class="item-detail">Painful or difficult defecation · Crying/whimpering during defecation · Tenesmus common</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Hematochezia</div><div class="item-detail">Bright red blood in feces · Indicates colon/rectum/anus bleeding · Fresh blood</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Melena</div><div class="item-detail">Black tarry stool · Digested blood · Upper GI bleeding (stomach/small intestine)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Dyschezia & Hematochezia - Causes</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Rectal/anal disease</div><div class="item-detail">Anal sacculitis/abscess · Rectal polyps · Anal "spasm" · Proctitis · Rectal prolapse</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Foreign body</div><div class="item-detail">Bones, sticks causing rectal trauma · Bite wounds</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Perianal fistula</div><div class="item-detail">German Shepherds predisposed · Painful defecation</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Neoplasia</div><div class="item-detail">Adenocarcinoma, lymphosarcoma, anal sac tumor</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Colonic disease</div><div class="item-detail">IBD · Colitis · Constipation (severe)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Melena - Causes (Upper GI Bleeding)</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">GI ulceration</div><div class="item-detail">NSAIDs overdose · Liver disease · Mast cell tumors · Gastrinoma</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Coagulopathy</div><div class="item-detail">Warfarin toxicity (rat poison) · Thrombocytopenia · DIC</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Severe gastritis</div><div class="item-detail">Foreign body · Toxins · Inflammatory</div></div></div>
+          <div class="alert-box"><strong>⚠️ Melena = SERIOUS!</strong> Always investigate for ulcers, coagulopathy, or severe GI disease</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Fecal Incontinence</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Definition</div><div class="item-detail">Involuntary passage of feces · Lack of awareness or control</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Neurologic causes</div><div class="item-detail">Spinal disease · Pelvic nerve damage · Cauda equina syndrome</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Sphincter damage</div><div class="item-detail">Trauma · Surgery · Chronic diarrhea</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Severe diarrhea</div><div class="item-detail">Can't control urgency · Overflow</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostic Approach</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Physical exam</div><div class="item-detail">Rectal exam ESSENTIAL! · Palpate for masses, polyps, foreign body · Check anal sacs</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Fecal examination</div><div class="item-detail">Parasites (Giardia, whipworms) · Bacteria (Salmonella, Campylobacter)</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">CBC/biochemistry</div><div class="item-detail">Neutrophilia if infection · Check coagulation if melena</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Imaging</div><div class="item-detail">Pelvic X-rays (fractures, masses) · Colonoscopy for neoplasia/IBD</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Treat underlying cause</div><div class="item-detail">Express anal sacs · Remove foreign body · Treat colitis/parasites</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Pain management</div><div class="item-detail">If dyschezia: Meloxicam 0.1 mg/kg PO SID (after hydration!)<div class="dose-tag">0.1 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Stool softeners</div><div class="item-detail">If constipation: Lactulose 0.5 ml/kg PO TID</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">GI protectants (if melena)</div><div class="item-detail">Omeprazole 1 mg/kg PO SID · Sucralfate 0.5-1 g PO TID<div class="dose-tag">Various</div></div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 3: APPETITE & WEIGHT CHANGES -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🍔</span>
+        <span class="subcard-title">Appetite & Weight Changes</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Anorexia - Key Concepts</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">True anorexia</div><div class="item-detail">Lack of appetite · No interest in food · Systemic disease</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Pseudoanorexia</div><div class="item-detail">Wants to eat but CAN'T · Oral pain, dysphagia, neurologic dysfunction</div></div></div>
+          <div class="alert-box"><strong>Critical distinction:</strong> Is the dog INTERESTED in food but can't eat (pseudoanorexia) or has NO interest (true anorexia)?</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Anorexia - Causes by System</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Psychological</div><div class="item-detail">Unpalatable diet · Changes in routine/environment · Stress</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">GI disease</div><div class="item-detail">Gastritis, enteritis, pancreatitis, IBD, obstruction</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Systemic disease</div><div class="item-detail">Fever, infection, sepsis, neoplasia, organ failure (kidney/liver)</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Neurologic</div><div class="item-detail">Pain, CNS disease, increased intracranial pressure</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Endocrine</div><div class="item-detail">Hypoadrenocorticism (Addison's), hypercalcemia</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Toxins</div><div class="item-detail">Medications, poisons, organ failure toxins (uremia)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Pseudoanorexia - Causes</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Oral cavity disorders</div><div class="item-detail">Dental disease, stomatitis, oral tumors, fractured teeth, gingivitis</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Mandibular dysfunction</div><div class="item-detail">Fracture, dislocation, paralysis, TMJ disease</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Pharyngeal disorders</div><div class="item-detail">Pharyngitis, retropharyngeal abscess, foreign body, tonsillitis</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Neurologic</div><div class="item-detail">Masticatory myositis, trigeminal nerve paralysis, rabies</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Weight Loss & Cachexia</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Definition</div><div class="item-detail">Weight loss >10% body weight (without fluid loss) = significant · Cachexia = extreme weight loss + muscle wasting</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Dietary causes</div><div class="item-detail">Poor quality food · Insufficient quantity · Inedible food · Spoiled diet</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Maldigestive disorders</div><div class="item-detail">Exocrine pancreatic insufficiency (EPI) · Polyphagia + weight loss + soft stool</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Malabsorptive disorders</div><div class="item-detail">IBD · Lymphangiectasia · Severe parasitism</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Metabolic disorders</div><div class="item-detail">Kidney/liver/cardiac failure · Diabetes · Hyperthyroidism (cats) · Cancer</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Excessive nutrient loss</div><div class="item-detail">Protein-losing enteropathy/nephropathy · Diabetes mellitus</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Polyphagia - Increased Appetite</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Physiologic</div><div class="item-detail">Pregnancy, lactation, growth, cold environment, increased exercise</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Behavioral</div><div class="item-detail">Competition with other pets · Learned behavior</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Malabsorption</div><div class="item-detail">EPI · IBD · Parasites (eating but not absorbing nutrients)</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Endocrine disease</div><div class="item-detail">Diabetes mellitus · Hyperthyroidism (cats) · Hyperadrenocorticism (Cushing's)</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Medications</div><div class="item-detail">Corticosteroids · Anticonvulsants (phenobarbital)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostic Approach</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">History</div><div class="item-detail">Appetite normal/increased/decreased? · Type of diet · Duration of weight loss · Other GI signs</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Physical exam</div><div class="item-detail">BCS (1-9 scale) · Oral exam · Lymph nodes · Abdominal palpation · Signs of systemic disease</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Minimum database</div><div class="item-detail">CBC, biochemistry, urinalysis · Fecal examination</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Special tests</div><div class="item-detail">TLI (EPI) · Folate/B12 · Imaging · Endocrine testing</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment - Anorexia</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Identify and treat cause</div><div class="item-detail">This is essential! Symptomatic treatment alone rarely works</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Supportive care</div><div class="item-detail">Fluid therapy · Nutritional support (syringe feeding, feeding tube) if prolonged</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Appetite stimulants (dogs)</div><div class="item-detail">Mirtazapine 0.6 mg/kg PO q24-48h · Maropitant if concurrent nausea<div class="dose-tag">0.6 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Appetite stimulants (cats)</div><div class="item-detail">Mirtazapine 1.88-3.75 mg/cat PO q24-72h · Capromorelin (Elura) 2 mg/kg PO SID<div class="dose-tag">Various</div></div></div></div>
+          <div class="alert-box"><strong>⚠️ Critical:</strong> If not eating >3-5 days → risk of hepatic lipidosis (CATS) or malnutrition. START nutritional support!</div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 4: OTHER GI SIGNS -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🔄</span>
+        <span class="subcard-title">Other GI Signs</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Dysphagia (Difficulty Swallowing)</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Definition</div><div class="item-detail">Difficulty swallowing · Usually implies oral or pharyngeal dysfunction</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Oral dysphagia</div><div class="item-detail">Difficulty prehending or chewing · Dental disease, oral tumors, fractures</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Pharyngeal dysphagia</div><div class="item-detail">Gagging, choking, coughing during swallowing · Foreign body, pharyngitis, paralysis</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Esophageal dysphagia</div><div class="item-detail">Regurgitation after swallowing · Megaesophagus, stricture, foreign body</div></div></div>
+          <div class="tip-box">Key question: WHERE is the problem? Mouth (oral), throat (pharyngeal), or esophagus (esophageal)?</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Flatulence (Gas)</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Definition</div><div class="item-detail">Excessive intestinal gas · Usually not serious but annoying to owners</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Dietary causes</div><div class="item-detail">Fermentable carbohydrates (beans, soy) · Poor quality diet · Sudden diet change</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Aerophagia</div><div class="item-detail">Swallowing air · Brachycephalic breeds · Eating too fast</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">GI disease</div><div class="item-detail">Malabsorption, IBD, bacterial overgrowth</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Treatment</div><div class="item-detail">High-quality digestible diet · Slow feeder bowls · Probiotics · Simethicone (limited efficacy)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Abdominal Distension</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Causes</div><div class="item-detail">Obesity · Pregnancy · Ascites (fluid) · Organomegaly · GDV (bloat) · Tumors</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Emergency: GDV (Gastric Dilatation-Volvulus)</div><div class="item-detail">Large deep-chested breeds · Acute bloating · Nonproductive retching · LIFE-THREATENING!</div></div></div>
+          <div class="alert-box"><strong>🚨 GDV = EMERGENCY!</strong> Tympanic abdomen + nonproductive retching + distress = Rush to surgery!</div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Source</span>
+      100 Top Consultations in Small Animal General Practice - Gastrointestinal Signs
+    </div>
+  </div>
+</div>
+
+
+<div class="card" data-category="clinical">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🩹</div>
+    <div>
+      <div class="card-title">Wounds & Wound Management</div>
+      <div class="card-badge">Assessment · Cleaning · Closure · Abscesses · Bites</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    
+    <!-- SUBCARD 1: ASSESSMENT & CLEANING -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🔍</span>
+        <span class="subcard-title">Initial Assessment & Cleaning</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Initial Assessment - ABC First!</div>
+          <div class="alert-box"><strong>⚠️ CRITICAL:</strong> Accidental wounds are often part of more serious conditions (hit by car, respiratory injury, shock). Treat life-threatening problems FIRST before focusing on the wound!</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Airway, Breathing, Circulation</div><div class="item-detail">Stabilize patient BEFORE wound care</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Control hemorrhage</div><div class="item-detail">Direct pressure · Elevation · Pressure bandage</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Assess wound severity</div><div class="item-detail">Depth, contamination, tissue viability, time since injury</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">The "Golden Period" - Timing Matters!</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">0-6 hours</div><div class="item-detail">OPTIMAL for primary closure · Minimal bacterial growth</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">6-12 hours</div><div class="item-detail">Still acceptable if clean wound · Consider delayed primary closure</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">>12 hours</div><div class="item-detail">HIGH infection risk · Usually second intention healing or delayed closure</div></div></div>
+          <div class="tip-box"><strong>Exception:</strong> Clean facial wounds (excellent blood supply) can often be closed up to 24 hours post-injury</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Wound Cleaning - DO NOT Use These!</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">❌ Hydrogen peroxide</div><div class="item-detail">Damages tissue, delays healing, creates gas bubbles</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">❌ Strong antiseptics</div><div class="item-detail">Povidone-iodine, chlorhexidine AT FULL STRENGTH damage tissue</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">❌ Antibiotic sprays/powders</div><div class="item-detail">Tetracycline, neomycin sprays DON'T WORK and contaminate wound</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">❌ Alcohol</div><div class="item-detail">Extremely painful, damages tissue</div></div></div>
+          <div class="alert-box"><strong>These are TOXIC to healing tissues!</strong> They kill bacteria BUT also kill the cells needed for healing.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Wound Cleaning - What TO Use ✅</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Sterile saline (0.9% NaCl)</div><div class="item-detail">BEST choice · Non-toxic · Effective mechanical cleaning<div class="dose-tag">GOLD STANDARD</div></div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Dilute chlorhexidine (0.05%)</div><div class="item-detail">Dilute 1:40 from 2% stock · Antimicrobial + safe<div class="dose-tag">0.05% solution</div></div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Dilute povidone-iodine (0.1-1%)</div><div class="item-detail">Dilute 1:10 to 1:100 · "Weak tea" color · Less ideal than above</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Tap water (if nothing else)</div><div class="item-detail">Studies show tap water is safe for irrigation · Better than nothing!</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Irrigation Technique</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">High-pressure lavage</div><div class="item-detail">35-60ml syringe + 18-20G needle · Creates 7-15 psi pressure<div class="dose-tag">Essential!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Volume matters</div><div class="item-detail">Use COPIOUS amounts · 50-100ml per cm of wound minimum</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Timing critical</div><div class="item-detail">Irrigation within 4 hours post-injury = VERY effective at removing bacteria</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Remove foreign material</div><div class="item-detail">Dirt, debris, devitalized tissue · Essential for healing</div></div></div>
+          <div class="alert-box"><strong>Pro tip:</strong> Be careful with jet irrigation - avoid separating tissue planes and driving bacteria deeper!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Clipping & Preparation</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Clip generously</div><div class="item-detail">Wide margin around wound · Use clippers, NOT scissors</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Protect wound during clipping</div><div class="item-detail">Pack wound with sterile gauze or apply water-soluble gel first</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Scrub AROUND wound</div><div class="item-detail">Use dilute chlorhexidine/betadine on surrounding skin · NOT in wound itself</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 2: WOUND CLOSURE -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🧵</span>
+        <span class="subcard-title">Wound Closure Techniques</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Primary Closure (First Intention Healing)</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">When to use</div><div class="item-detail">Clean wound · <6 hours old · Minimal tissue loss · Can approximate edges without tension</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Advantages</div><div class="item-detail">Fastest healing · Minimal scarring · Best cosmetic result · Protection from contamination</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Requirements</div><div class="item-detail">Clean wound · Adequate blood supply · No tension · Dead space eliminated</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Debridement - Critical First Step!</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Remove ALL devitalized tissue</div><div class="item-detail">Necrotic tissue = bacterial growth medium · Must be excised</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Sharp debridement</div><div class="item-detail">Scalpel, scissors · Create clean surgical margins · Minimal tissue sacrifice</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Assess tissue viability</div><div class="item-detail">Color, bleeding, warmth · If questionable, debride it</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Remove foreign material</div><div class="item-detail">Dirt, debris, embedded material · May need enlarging wound to explore</div></div></div>
+          <div class="tip-box">For crushing/avulsion wounds: Extensive debridement needed · Remove compromised tissue aggressively</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Suturing Techniques</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Eliminate dead space</div><div class="item-detail">Use buried sutures · Dead space = seroma/hematoma/infection risk</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">NO TENSION!</div><div class="item-detail">Excessive tension → sutures tear through tissue · Use tension-relieving sutures if needed<div class="dose-tag">Critical!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Suture materials</div><div class="item-detail">Monofilament nylon for skin · Absorbable (PDS, Vicryl) for buried layers · 3-0 to 5-0 typical</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Bandage after closure</div><div class="item-detail">Control edema · Immobilize · Absorb drainage · Protect sutures</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Delayed Primary Closure</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">When to use</div><div class="item-detail">Contaminated wound · 3-5 days post-injury · Healthy granulation present</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Technique</div><div class="item-detail">Clean wound daily · Wait 3-4 days for granulation · Then close with sutures<div class="dose-tag">3-5 days</div></div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Advantages</div><div class="item-detail">Allows infection to declare itself · Better than primary closure of contaminated wound</div></div></div>
+          <div class="alert-box"><strong>Key point:</strong> Wound edges become thicker and stiffer after 3-4 days · May need excision before closure</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Second Intention Healing (Open Wound)</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">When to use</div><div class="item-detail">Severe contamination · Extensive tissue loss · Cannot approximate edges · >12 hours old + dirty</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Technique</div><div class="item-detail">Clean daily · Bandage with non-adherent dressing · Allow contraction + epithelialization</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Bandaging</div><div class="item-detail">Gauze impregnated with Vaseline · Change q2-7 days · Keep moist but not wet</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Timeline</div><div class="item-detail">Granulation 5-7 days · Contraction 1-3 weeks · Full healing 3-8+ weeks</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">When antibiotics needed</div><div class="item-detail">ONLY if bacterial proliferation + invasion + systemic signs · NOT routine!<div class="dose-tag">Not always!</div></div></div></div>
+          <div class="tip-box">Large open wounds that can't be closed: Wash daily with saline · Bandage · May take weeks but heal surprisingly well!</div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 3: ABSCESS MANAGEMENT -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">💉</span>
+        <span class="subcard-title">Abscess Management</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">What is an Abscess?</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Definition</div><div class="item-detail">Localized collection of purulent exudate (pus) confined within a cavity · Thick fibrous wall</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Pathophysiology</div><div class="item-detail">Foreign body/bacteria → inflammation → fibrin capsule forms → pus accumulates · May rupture spontaneously</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Common Abscess Locations</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Skin/subcutaneous</div><div class="item-detail">Cat fights, dog bites · MOST COMMON in field</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Anal sac</div><div class="item-detail">Dogs > cats · Impaction → infection → abscess</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Prostate</div><div class="item-detail">Intact male dogs · Often very sick</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Tooth root</div><div class="item-detail">Carnassial tooth abscess · Facial swelling below eye</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Internal</div><div class="item-detail">Liver, pancreas, lungs · Require advanced diagnostics</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Clinical Signs</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Swelling</div><div class="item-detail">Painful, fluctuant or firm mass · Heat, redness · +/- discharge if ruptured</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Systemic signs</div><div class="item-detail">Fever · Lethargy · Anorexia · Depends on location and severity</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">History</div><div class="item-detail">Often history of trauma, fight, bite wound · Rapidly appearing swelling</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment - Basic Principles</div>
+          <div class="alert-box"><strong>Goal:</strong> Establish and maintain drainage · Remove foreign material/necrotic tissue · Appropriate antibiotics</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Lance and drain</div><div class="item-detail">Make LARGE opening (don't just needle aspirate!) · Allow dependent drainage</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Flush thoroughly</div><div class="item-detail">Saline or dilute chlorhexidine · Remove all pus and debris</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Debride</div><div class="item-detail">Remove necrotic tissue, foreign material, nidus of infection</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">DO NOT close!</div><div class="item-detail">Leave open for drainage · Bandage if possible · Heal by second intention</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Antibiotics for Abscesses</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Amoxicillin-clavulanate</div><div class="item-detail">11-22 mg/kg PO q8-12h · Broad spectrum · Good for bites<div class="dose-tag">11-22 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Cefovecin (Convenia)</div><div class="item-detail">8 mg/kg SC once · Lasts 14 days · Great for non-compliant owners<div class="dose-tag">8 mg/kg SC</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Enrofloxacin</div><div class="item-detail">5-10 mg/kg PO SID · For severe/resistant infections<div class="dose-tag">5-10 mg/kg</div></div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Doxycycline</div><div class="item-detail">5 mg/kg PO q12h · Good for anaerobes (Mycoplasma, L-forms)<div class="dose-tag">5 mg/kg BID</div></div></div></div>
+          <div class="tip-box"><strong>Duration:</strong> Continue until 3-5 days PAST resolution of clinical signs · Typically 10-14 days minimum</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Special Considerations</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Anal sac abscess</div><div class="item-detail">Lance, flush, drain · Often recurrent · Consider anal sacculectomy if repeated</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Septic abscesses</div><div class="item-detail">Patient systemically ill · Aggressive IV fluid therapy + antibiotics · Hospitalization</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Prostatic abscess</div><div class="item-detail">Medical emergency · Castration usually required · Refer</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Follow-up & Prevention</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Recheck in 3-5 days</div><div class="item-detail">Ensure drainage continues · Repeat flushing if needed</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Keep wound open</div><div class="item-detail">Prevent premature closure · May need repeated opening</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">E-collar</div><div class="item-detail">Prevent self-trauma and licking</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Prevention</div><div class="item-detail">Indoor cats · Avoid fights · Early wound treatment</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 4: SPECIAL WOUNDS -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🐾</span>
+        <span class="subcard-title">Special Wounds (Bites, Punctures)</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Animal Bite Wounds - General Principles</div>
+          <div class="alert-box"><strong>CRITICAL:</strong> Bite wounds are ALWAYS contaminated · High infection risk · Often more damage than visible</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Key problem</div><div class="item-detail">Small skin wound → massive deep tissue damage · Crushing, tearing, bacterial inoculation</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Microorganisms</div><div class="item-detail">Pasteurella (especially cats) · Streptococcus · Staphylococcus · Anaerobes · Mixed flora</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Dog Bite Wounds</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Characteristics</div><div class="item-detail">Crushing injury · Tissue avulsion · More visible damage · Multiple wounds common</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Management</div><div class="item-detail">Clip widely · Explore thoroughly · Debride devitalized tissue · Usually leave open or delayed closure</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Complications</div><div class="item-detail">Large subcutaneous spaces · Dead muscle · Infection risk moderate</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Cat Bite Wounds ⚠️ (HIGH RISK!)</div>
+          <div class="alert-box"><strong>Cat bites are WORSE than dog bites for infection!</strong> Small punctures inoculate bacteria deep into tissue</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Characteristics</div><div class="item-detail">Small puncture wounds · DEEP penetration · Minimal visible injury · HIGH bacterial load</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">High infection rate</div><div class="item-detail">Pasteurella multocida inoculated deep · Abscess formation common (within 24-72 hours)</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Management</div><div class="item-detail">DO NOT close small punctures · Open, clean, drain · Antibiotics essential<div class="dose-tag">Amox-clav!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Special risk</div><div class="item-detail">Cellulitis, extensive abscess formation · Can become septic</div></div></div>
+          <div class="tip-box"><strong>Cat fight wounds:</strong> Nearly ALWAYS abscess if not treated immediately · Prophylactic antibiotics recommended!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Puncture Wounds</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Problem</div><div class="item-detail">External wound tiny · Deep tissue damage/contamination · Inoculates bacteria to depth</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Management</div><div class="item-detail">Enlarge opening if possible · Explore depth · Flush copiously · Leave open</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">DO NOT close</div><div class="item-detail">Traps infection inside · High abscess risk</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Foreign bodies</div><div class="item-detail">Check for retained material (teeth, stick fragments, projectiles)</div></div></div>
+          <div class="alert-box">Penetrating wounds to chest/abdomen = EMERGENCY · Refer immediately!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment Protocol for Bite Wounds</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 1: Clip widely</div><div class="item-detail">Often more wounds than initially visible · Shave large area</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 2: Explore thoroughly</div><div class="item-detail">May need sedation/anesthesia · Probe wounds · Assess depth and tissue damage</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 3: Debride</div><div class="item-detail">Remove all devitalized tissue · Be aggressive with crushing injuries</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 4: Copious lavage</div><div class="item-detail">High-pressure irrigation · Large volumes of saline</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 5: Leave open or drain</div><div class="item-detail">Don't close · Place drain if large subcutaneous space · Bandage</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 6: Antibiotics</div><div class="item-detail">Amoxicillin-clavulanate 12.5-25 mg/kg PO BID × 7-14 days<div class="dose-tag">12.5-25 mg/kg</div></div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 5: COMPLICATIONS & AFTERCARE -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">⚠️</span>
+        <span class="subcard-title">Complications & Aftercare</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Common Complications</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Infection</div><div class="item-detail">Most common · Purulent discharge, swelling, pain, fever · Treat with drainage + antibiotics</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Dehiscence</div><div class="item-detail">Sutures break down · Usually from tension, infection, or premature suture removal</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Seroma</div><div class="item-detail">Fluid accumulation · Often self-limiting · Drain if large/persistent</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Excessive contraction</div><div class="item-detail">Can cause functional impairment · Over joints especially problematic</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Chronic draining tract</div><div class="item-detail">Foreign body or sequestrum · Requires surgical exploration</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">When to Worry - Refer Immediately!</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Systemic signs</div><div class="item-detail">Fever, lethargy, anorexia, vomiting → Sepsis risk</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Extensive tissue loss</div><div class="item-detail">>50% skin loss · May need grafts or flaps</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Penetrating chest/abdomen</div><div class="item-detail">Pneumothorax, organ damage possible</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Joint involvement</div><div class="item-detail">Septic arthritis risk · Needs aggressive treatment</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Not healing after 2 weeks</div><div class="item-detail">Foreign body, underlying disease, poor wound care</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Bandage Management</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Change frequency</div><div class="item-detail">Daily initially (heavy drainage) → q2-7 days as drainage decreases</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Keep dry and clean</div><div class="item-detail">Plastic bag over bandage when outside · Change if wet/soiled</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Watch for complications</div><div class="item-detail">Strike-through, odor, swelling, pain → Change immediately</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Owner Instructions</div>
+          <div class="tip-box">
+            ✅ <strong>DO:</strong><br>
+            • Keep bandage dry (plastic bag when outside)<br>
+            • E-collar at all times<br>
+            • Complete antibiotic course<br>
+            • Return for scheduled rechecks<br>
+            • Watch for increased swelling, discharge, odor<br>
+            <br>
+            ❌ <strong>DON'T:</strong><br>
+            • Remove bandage yourself<br>
+            • Let pet lick/chew wound<br>
+            • Apply home remedies<br>
+            • Stop antibiotics early (even if looks better)<br>
+            • Skip recheck appointments
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Recheck Schedule</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Initial recheck: 24-48 hours</div><div class="item-detail">Especially for severe wounds · Check for complications</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Bandage changes: q2-7 days</div><div class="item-detail">Based on wound drainage · More frequent initially</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Suture removal: 10-14 days</div><div class="item-detail">Body/limbs 10-12 days · Face 5-7 days</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Source</span>
+      Small Animal Surgery Textbook - Management of Accidental Wounds & Abscessation
+    </div>
+  </div>
+</div>
+
+<div class="card" data-category="clinical">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">👂</div>
+    <div>
+      <div class="card-title">Otitis & Ear Diseases</div>
+      <div class="card-badge">Otoscopic Exam · Diagnosis · Treatment · Cleaning</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    
+    <!-- SUBCARD 1: EXAMINATION & DIAGNOSIS -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🔍</span>
+        <span class="subcard-title">Examination & Diagnosis</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Indications for Otoscopic Examination</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Ear scratching/rubbing</div><div class="item-detail">Most common sign</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Head shaking</div><div class="item-detail">Trying to dislodge debris or relieve discomfort</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Ear odor</div><div class="item-detail">Yeasty smell = Malassezia · Foul smell = bacterial infection</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Discharge, redness, or swelling</div><div class="item-detail">Brown waxy = yeast · Yellow/green = bacteria · Black = ear mites (cats)</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Hair loss around ears</div><div class="item-detail">Self-trauma from scratching</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Head tilt</div><div class="item-detail">Middle ear disease · Facial nerve paralysis</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Deafness</div><div class="item-detail">Chronic ear disease blocking canal</div></div></div>
+          <div class="alert-box"><strong>⚠️ Heavy sedation or general anesthesia usually required</strong> for thorough examination and ear cleaning. Few dogs/cats allow awake examination.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Ear Anatomy (Quick Review)</div>
+          <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Pinna (helix)</div><div class="item-detail">External ear flap · Covered with fur</div></div></div>
+          <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">External ear canal</div><div class="item-detail">Vertical canal → horizontal canal → tympanic membrane</div></div></div>
+          <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Tympanic bulla (middle ear)</div><div class="item-detail">Normally air-filled · Contains ear ossicles</div></div></div>
+          <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Inner ear</div><div class="item-detail">Balance and hearing</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Otoscopic Examination Technique</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Step 1: Position patient</div><div class="item-detail">Lateral recumbancy · Affected ear UP</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Step 2: Select appropriate cone</div><div class="item-detail">Largest cone that fits comfortably · Don't force</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Step 3: Straighten ear canal</div><div class="item-detail">Pull pinna UP and AWAY from head (dorsal direction) · Straightens L-shaped canal</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Step 4: Insert otoscope</div><div class="item-detail">Maintain traction on pinna · Look for canal crusting, hair, erythema, discharge</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Step 5: Assess tympanic membrane</div><div class="item-detail">Color, health, integrity · CRUCIAL - if ruptured, certain meds are ototoxic!</div></div></div>
+          <div class="alert-box"><strong>CRITICAL:</strong> If tympanic membrane is NOT visible → assume it's damaged. DO NOT use potentially ototoxic cleaners/medications!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">What to Look For - Ear Canal</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Normal</div><div class="item-detail">Pink, hairless tissue · Minimal wax · Smooth walls</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Erythema (redness)</div><div class="item-detail">Inflammation from infection, allergy, foreign body</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Stenosis (narrowing)</div><div class="item-detail">Chronic inflammation → thickened canal walls → narrowed lumen</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Discharge</div><div class="item-detail">Brown waxy = Malassezia · Yellow/green purulent = bacteria · Black granular = ear mites</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Polyps/masses</div><div class="item-detail">Smooth growths (polyps) vs irregular (neoplasia)</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Diagnostic Sampling</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Cytology (ALWAYS perform!)</div><div class="item-detail">Swab ear canal → roll on slide → Diff-Quick stain<div class="dose-tag">Essential test!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">What to look for on cytology</div><div class="item-detail">Cocci + neutrophils = bacteria · Budding yeasts = Malassezia · Mites = Otodectes (cats)</div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Culture & sensitivity</div><div class="item-detail">Chronic/recurrent cases · Suspected resistant bacteria · Failed initial treatment</div></div></div>
+          <div class="tip-box"><strong>Pro tip:</strong> Take diagnostic sample BEFORE cleaning ear!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Differential Diagnoses by Presentation</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Brown waxy discharge + yeasty smell</div><div class="item-detail">Malassezia dermatitis (yeast infection)</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Yellow-green purulent discharge</div><div class="item-detail">Bacterial otitis (Staphylococcus, Pseudomonas)</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Black granular "coffee grounds"</div><div class="item-detail">Ear mites (Otodectes cynotis) - common in cats, puppies</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Head tilt + facial nerve paralysis</div><div class="item-detail">Otitis media (middle ear infection)</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Bilateral + allergic skin disease</div><div class="item-detail">Atopic dermatitis with secondary otitis</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 2: EAR CLEANING -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">🧼</span>
+        <span class="subcard-title">Ear Cleaning Techniques</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">WHY Ear Cleaning is Essential</div>
+          <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Remove physical barriers</div><div class="item-detail">Wax, debris, pus block medication penetration</div></div></div>
+          <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Antimicrobials inactivated</div><div class="item-detail">Debris and pus contain proteins that neutralize antibiotics</div></div></div>
+          <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Remove inflammatory by-products</div><div class="item-detail">Degenerating cellular debris + metabolic waste perpetuate inflammation</div></div></div>
+          <div class="alert-box"><strong>Bottom line:</strong> Cleaning ears is NOT optional - it's essential for therapeutic response!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Ear Cleaning Technique - Dogs</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 1: Restraint</div><div class="item-detail">Place dog on table chest-high · Drape arm over shoulders</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 2: Wipe visible discharge</div><div class="item-detail">Use gauze (NOT Q-tips!) to remove surface debris</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 3: Fill ear canal</div><div class="item-detail">Pull pinna UP · Gently fill with cleaning solution</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 4: Massage base of ear</div><div class="item-detail">Massage VERY GENTLY · Hear squishing sound · Most dogs find this soothing</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 5: Let dog shake</div><div class="item-detail">Release head · Dog shakes out debris/solution</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 6: Wipe out debris</div><div class="item-detail">Use gauze to remove dislodged material</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Step 7: Apply medication</div><div class="item-detail">After ear is relatively clean · Massage again to distribute</div></div></div>
+          <div class="alert-box"><strong>⚠️ NEVER use Q-tips!</strong> They push debris deeper and can rupture tympanum.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Ear Cleaning Technique - Cats</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 1: "Burrito" wrap</div><div class="item-detail">Wrap cat in towel (only head/tail stick out)</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 2: Hug cat gently</div><div class="item-detail">One hand under chin · Other hand free to work</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Step 3-7: Same as dogs</div><div class="item-detail">Fill → massage → shake → wipe → medicate</div></div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Ear Cleaning Products</div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Ceruminolytics (wax dissolvers)</div><div class="item-detail">Require 10-15 min contact time<div class="dose-tag">10-15 min wait!</div></div></div></div>
+          <div class="item"><div class="item-dot dot-cyan"></div><div><div class="item-name">Aqueous flushing (safest)</div><div class="item-detail">0.05-0.2% chlorhexidine solution in warm saline</div></div></div>
+          <div class="alert-box"><strong>Popular products:</strong> Epi-otic (Virbac), ClearRx, Cerulytic, DermaPet, Adams pan-otic</div>
+          <div class="tip-box">⚠️ If tympanum ruptured or not visible → use ONLY saline flush!</div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 3: TREATMENT -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">💊</span>
+        <span class="subcard-title">Treatment Protocols</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">Treatment - Malassezia Otitis</div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Topical antifungal ear drops</div><div class="item-detail">Miconazole, clotrimazole, nystatin · BID × 2-3 weeks<div class="dose-tag">BID × 14-21 days</div></div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Clean ears BEFORE medicating</div><div class="item-detail">Daily cleaning removes yeast + debris · Essential!</div></div></div>
+          <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Systemic antifungals (severe)</div><div class="item-detail">Ketoconazole 5-10 mg/kg PO SID × 3-4 weeks<div class="dose-tag">5-10 mg/kg</div></div></div></div>
+          <div class="tip-box">💡 Malassezia is often SECONDARY to allergies. Treat underlying cause!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment - Bacterial Otitis</div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Topical antibiotic ear drops</div><div class="item-detail">Gentamicin, neomycin, polymyxin B, fluoroquinolones<div class="dose-tag">BID-TID × 14-21 days</div></div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Clean ears daily</div><div class="item-detail">Remove pus/debris for antibiotic penetration</div></div></div>
+          <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Systemic antibiotics (severe)</div><div class="item-detail">Enrofloxacin 5-10 mg/kg PO SID (Pseudomonas)<div class="dose-tag">5-10 mg/kg</div></div></div></div>
+          <div class="alert-box"><strong>⚠️ Pseudomonas:</strong> Very resistant! May require surgery if chronic.</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Treatment - Ear Mites (Otodectes)</div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Clean ears thoroughly</div><div class="item-detail">Remove black "coffee ground" debris first</div></div></div>
+          <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Systemic treatment (easier)</div><div class="item-detail">Selamectin spot-on monthly × 2 months<div class="dose-tag">2 months</div></div></div></div>
+          <div class="alert-box">Treat ALL cats/dogs in household even if not showing signs!</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Chronic Otitis Management</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Identify underlying cause</div><div class="item-detail">Allergies (food, atopic) · Hypothyroidism · Anatomical issues</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Improve airflow</div><div class="item-detail">Pluck hair · Tie ears on top of head · Keeps ears dry</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Regular preventive cleaning</div><div class="item-detail">Weekly cleaning even when not infected</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Surgery (last resort)</div><div class="item-detail">Lateral resection · Total ear canal ablation (TECA)</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- SUBCARD 4: OWNER INSTRUCTIONS -->
+    <div class="subcard">
+      <div class="subcard-header" onclick="toggleSubcard(this)">
+        <span class="subcard-icon">📋</span>
+        <span class="subcard-title">Owner Instructions & Referral</span>
+        <span class="subcard-arrow">▸</span>
+      </div>
+      <div class="subcard-body" style="display: none;">
+        
+        <div class="section">
+          <div class="section-title">What to Tell Owners</div>
+          <div class="tip-box">
+            • Clean ears BEFORE applying medication (critical!)<br>
+            • Apply solution → massage → let shake → wipe debris<br>
+            • NEVER use Q-tips<br>
+            • Complete full treatment course<br>
+            • Don't get water in ears during bathing<br>
+            • Chronic infections need lifelong management<br>
+            • Recheck in 7-10 days, then 2-3 weeks<br>
+            • Return if: head tilt, extreme pain, facial paralysis
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">When to Refer/Advanced Care</div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Middle ear involvement</div><div class="item-detail">Head tilt, facial nerve paralysis, Horner's syndrome</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Complete ear canal stenosis</div><div class="item-detail">Cannot visualize tympanum · Likely needs surgery</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Recurrent otitis despite treatment</div><div class="item-detail">Need full workup for allergies/endocrinopathy</div></div></div>
+          <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Masses/polyps in ear canal</div><div class="item-detail">Need removal ± biopsy</div></div></div>
+        </div>
+        
+      </div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Source</span>
+      Small Animal Clinical Procedures - Otoscopic Examination, Ear Cleaning & Medication Techniques
+    </div>
+  </div>
+</div>
+
+
+<!-- CATEGORY: DRUGS & TREATMENT -->
+<div class="card" data-category="drugs">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">💊</div>
+    <div>
+      <div class="card-title">Drug Reference</div>
+      <div class="card-badge">Quick Lookup · Doses · Routes</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    <div class="section">
+      <div class="section-title">Antibiotics</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Amoxicillin-clavulanate</div><div class="item-detail">12.5–25 mg/kg PO BID<div class="dose-tag">12.5–25 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Cefalexin</div><div class="item-detail">22 mg/kg PO BID<div class="dose-tag">22 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Enrofloxacin</div><div class="item-detail">5–20 mg/kg SID · Caution in growing animals!<div class="dose-tag">5–20 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Metronidazole</div><div class="item-detail">25 mg/kg PO BID<div class="dose-tag">25 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Doxycycline</div><div class="item-detail">10 mg/kg SID<div class="dose-tag">10 mg/kg</div></div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Anti-inflammatory & Pain</div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Meloxicam</div><div class="item-detail">Dog: 0.2 mg/kg day 1, then 0.1 mg/kg · Cat: 0.1 mg/kg (caution)<div class="dose-tag">0.1–0.2 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Carprofen</div><div class="item-detail">2.2 mg/kg BID or 4.4 mg/kg SID<div class="dose-tag">2.2 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Tramadol</div><div class="item-detail">2–5 mg/kg PO BID-TID<div class="dose-tag">2–5 mg/kg</div></div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Gastrointestinal</div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Maropitant (Cerenia)</div><div class="item-detail">1 mg/kg SC/PO SID<div class="dose-tag">1 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Metoclopramide</div><div class="item-detail">0.2–0.5 mg/kg SC/PO TID<div class="dose-tag">0.2–0.5 mg/kg</div></div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Omeprazole</div><div class="item-detail">0.5–1 mg/kg PO SID<div class="dose-tag">0.5–1 mg/kg</div></div></div></div>
+    </div>
+
+    <div class="alert-box">
+      <strong>⚠️ TOXIC TO CATS:</strong> Ibuprofen · Acetaminophen (Paracetamol)
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY: DIAGNOSTICS -->
+<div class="card" data-category="diagnostics">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🔬</div>
+    <div>
+      <div class="card-title">Laboratory & Diagnostics</div>
+      <div class="card-badge">Blood Tubes · When to Test</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    <div class="section">
+      <div class="section-title">Blood Tube Guide</div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">EDTA (purple) · 2.0 ml</div><div class="item-detail">CBC, fluid cytology · Must be full draw · Mix 5–6x</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Lithium Heparin (green) · 4.0 ml</div><div class="item-detail">Biochemistry, haematology · Must be full draw</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Plain/Clot Activator (red) · 6.0 ml</div><div class="item-detail">Serology, hormones, cortisol · Mix 5–6x</div></div></div>
+      <div class="item"><div class="item-dot dot-blue"></div><div><div class="item-name">Sodium Citrate (blue) · 1.8 ml</div><div class="item-detail">Coagulation studies · Must be full draw · Mix 8–10x</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">When to Run Bloodwork</div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">ALWAYS before anesthesia if:</div><div class="item-detail">Age &gt;6 years · Weight &lt;2.5 kg or &gt;34 kg · Any illness signs</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">V/D lasting &gt;3 days</div><div class="item-detail">CBC + Chemistry (kidneys, liver, electrolytes)</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">PU/PD (excessive drinking/urinating)</div><div class="item-detail">Chemistry + Urinalysis · Rule out diabetes, kidney disease</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Weight loss + normal appetite</div><div class="item-detail">T4 (cats), glucose, chemistry panel</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Pale gums + lethargy</div><div class="item-detail">CBC for anemia</div></div></div>
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Sources</span>
+      Gribbles BD Tube Guide · Clinical Reasoning in Small Animal Practice
+    </div>
+  </div>
+</div>
+
+<!-- CATEGORY: PREVENTION -->
+<div class="card" data-category="prevention">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">💉</div>
+    <div>
+      <div class="card-title">Vaccination</div>
+      <div class="card-badge">Core · Non-core · Schedule</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    <div class="section">
+      <div class="section-title">Core Vaccines — Dogs</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">DHPPi (Distemper, Hepatitis, Parvo, Parainfluenza)</div><div class="item-detail">Week 6, 9, 12 · Booster at 1 year · Then every 3 years</div></div></div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Rabies</div><div class="item-detail">Week 12 · Booster at 1 year · Then every 1–3 years (local law)</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Core Vaccines — Cats</div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">FVRCP (FHV-1, FCV, FPV)</div><div class="item-detail">Week 6, 9, 12 · Booster at 1 year · Then every 3 years</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Rabies</div><div class="item-detail">Week 12 · Booster at 1 year · Then every 1–3 years</div></div></div>
+    </div>
+
+    <div class="alert-box">
+      <strong>Anaphylaxis Protocol:</strong><br>
+      1. Epinephrine 0.01 mg/kg IM immediately<br>
+      2. Dexamethasone 0.5–1 mg/kg IV<br>
+      3. Diphenhydramine 1–2 mg/kg IM<br>
+      4. IV fluids for shock
+    </div>
+  </div>
+</div>
+
+<div class="card" data-category="prevention">
+  <div class="card-header" onclick="toggleCard(this)">
+    <div class="card-icon">🐛</div>
+    <div>
+      <div class="card-title">Parasite Prevention</div>
+      <div class="card-badge">ESCCAP Protocol · Deworming Groups</div>
+    </div>
+    <div class="card-arrow">▾</div>
+  </div>
+  <div class="card-body">
+    <div class="section">
+      <div class="section-title">ESCCAP Deworming Groups</div>
+      <div class="item"><div class="item-dot dot-green"></div><div><div class="item-name">Group A – 1–2x/year</div><div class="item-detail">Indoor only · No contact with other dogs/parks/raw meat</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Group B – 4x/year</div><div class="item-detail">Outdoors + contact with parks, other dogs</div></div></div>
+      <div class="item"><div class="item-dot dot-orange"></div><div><div class="item-name">Group C – 4–12x/year</div><div class="item-detail">Eats snails/slugs, raw meat · Roundworms + tapeworms</div></div></div>
+      <div class="item"><div class="item-dot dot-red"></div><div><div class="item-name">Group D – Monthly</div><div class="item-detail">Hunts prey, eats anything, unsupervised outdoor access</div></div></div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Special Populations</div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Puppies</div><div class="item-detail">From 2 weeks · Every 14 days until 2 weeks after weaning · Then monthly to 6 months</div></div></div>
+      <div class="item"><div class="item-dot dot-purple"></div><div><div class="item-name">Pregnant bitches</div><div class="item-detail">Macrocyclic lactones day 40 & 55 OR Fenbendazole daily from day 40 to 2 days post-partum</div></div></div>
+    </div>
+
+    <div class="alert-box">
+      <strong>⚠️ CAUTION:</strong> Ivermectin toxic to Collies, Shelties (MDR1 mutation)! Use Milbemycin or Moxidectin instead.
+    </div>
+
+    <div class="ref-box">
+      <span class="ref-label">📚 Source</span>
+      ESCCAP Guideline – Individual Deworming of Dogs
+    </div>
+  </div>
+</div>
+
+</div> <!-- end cards -->
+
+<script>
+function toggleCard(header) {
+  const card = header.parentElement;
+  card.classList.toggle('open');
+}
+
+function toggleSubcard(header) {
+  const body = header.nextElementSibling;
+  
+  if (body.style.display === 'none' || body.style.display === '') {
+    body.style.display = 'block';
+    header.classList.add('expanded');
+  } else {
+    body.style.display = 'none';
+    header.classList.remove('expanded');
+  }
+}
+
+const searchInput = document.getElementById('searchInput');
+const cards = document.querySelectorAll('.card');
+const tabs = document.querySelectorAll('.tab');
+
+searchInput.addEventListener('input', function() {
+  const query = this.value.toLowerCase().trim();
+  cards.forEach(card => {
+    const text = card.innerText.toLowerCase();
+    card.style.display = text.includes(query) ? '' : 'none';
+  });
+});
+
+tabs.forEach(tab => {
+  tab.addEventListener('click', function() {
+    tabs.forEach(t => t.classList.remove('active'));
+    this.classList.add('active');
+    const filter = this.dataset.filter;
+    
+    cards.forEach(card => {
+      if (filter === 'all') {
+        card.style.display = '';
+      } else {
+        const category = card.dataset.category;
+        card.style.display = (category === filter) ? '' : 'none';
+      }
+    });
+    
+    searchInput.value = '';
+  });
+});
+</script>
+</body>
+</html>
