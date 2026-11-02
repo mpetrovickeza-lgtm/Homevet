@@ -393,27 +393,63 @@ textarea{resize:vertical;min-height:65px;line-height:1.5}
         </div>
 
         <!-- VAKCINALNI KARTON -->
-        <div style="background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.2);border-radius:10px;padding:10px 12px;margin-bottom:8px">
-          <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--green);letter-spacing:0.5px;margin-bottom:8px">💉 VAKCINALNI KARTON</div>
+        <datalist id="tipList"><option value="DHP"><option value="DHPPi"><option value="DHPPi + L"><option value="DHPPi + L + Corona"><option value="Pi"><option value="FVRCP"><option value="FVRCP + FeLV"></datalist>
+        <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:10px 12px;margin-bottom:8px">
+          <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:8px">🦠 VAKCINA – BESNILO</div>
           <div class="row2" style="margin-bottom:6px">
             <div class="field-group" style="margin:0">
               <label class="field-label">Naziv vakcine</label>
-              <input type="text" id="vaccName" placeholder="npr. Pneumodog Bp/Pi2" />
+              <input type="text" id="rb_naziv" placeholder="npr. Nobivac" />
             </div>
             <div class="field-group" style="margin:0">
-              <label class="field-label">Serijski broj</label>
-              <input type="text" id="vaccSerial" placeholder="npr. B2024-1234" />
+              <label class="field-label">Serija (LOT)</label>
+              <input type="text" id="rb_serija" />
             </div>
           </div>
-          <div class="row2">
+          <div class="row2" style="margin-bottom:6px">
             <div class="field-group" style="margin:0">
               <label class="field-label">Datum aplikacije</label>
-              <input type="date" id="vaccDate" />
+              <input type="date" id="rb_datum" onchange="autoRevac('rb')" />
             </div>
             <div class="field-group" style="margin:0">
-              <label class="field-label">Rok trajanja vakcine</label>
-              <input type="date" id="vaccExpiry" />
+              <label class="field-label">Rok vakcine</label>
+              <input type="date" id="rb_rok" />
             </div>
+          </div>
+          <div class="field-group" style="margin:0">
+            <label class="field-label">Revakcinacija (sledeća doza)</label>
+            <input type="date" id="rb_revac" />
+          </div>
+        </div>
+        <div style="background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:10px;padding:10px 12px;margin-bottom:8px">
+          <div style="font-family:'Syne',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.5px;margin-bottom:8px">🛡️ VAKCINA – ZARAZNE BOLESTI</div>
+          <div class="field-group" style="margin:0 0 6px">
+            <label class="field-label">Tip kombinacije</label>
+            <input type="text" id="zb_tip" list="tipList" placeholder="DHP, DHPPi, DHPPi + L, FVRCP..." />
+          </div>
+          <div class="row2" style="margin-bottom:6px">
+            <div class="field-group" style="margin:0">
+              <label class="field-label">Naziv vakcine</label>
+              <input type="text" id="zb_naziv" placeholder="npr. Nobivac" />
+            </div>
+            <div class="field-group" style="margin:0">
+              <label class="field-label">Serija (LOT)</label>
+              <input type="text" id="zb_serija" />
+            </div>
+          </div>
+          <div class="row2" style="margin-bottom:6px">
+            <div class="field-group" style="margin:0">
+              <label class="field-label">Datum aplikacije</label>
+              <input type="date" id="zb_datum" onchange="autoRevac('zb')" />
+            </div>
+            <div class="field-group" style="margin:0">
+              <label class="field-label">Rok vakcine</label>
+              <input type="date" id="zb_rok" />
+            </div>
+          </div>
+          <div class="field-group" style="margin:0">
+            <label class="field-label">Revakcinacija (sledeća doza)</label>
+            <input type="date" id="zb_revac" />
           </div>
         </div>
 
@@ -744,6 +780,24 @@ function gatherExamData(){
 /* ══════════════════════════════════════════
    COPY FOR CLAUDE (main action)
 ══════════════════════════════════════════ */
+function vaccLines(){
+  const g=id=>document.getElementById(id)?.value||'';
+  const out=[];
+  [['rb','BESNILO'],['zb','ZARAZNE']].forEach(([p,L])=>{
+    if(!(g(p+'_datum')||g(p+'_naziv')||g(p+'_serija')||g(p+'_revac'))) return;
+    if(p==='zb') out.push(`${L}_TIP: ${g('zb_tip')||'—'}`);
+    out.push(`${L}_NAZIV: ${g(p+'_naziv')||'—'}`,`${L}_SERIJA: ${g(p+'_serija')||'—'}`,`${L}_DATUM: ${g(p+'_datum')||'—'}`,`${L}_ROK: ${g(p+'_rok')||'—'}`,`${L}_REVAKCINACIJA: ${g(p+'_revac')||'—'}`);
+  });
+  return out;
+}
+function autoRevac(p){
+  const d=document.getElementById(p+'_datum').value, r=document.getElementById(p+'_revac');
+  if(!d||!r||r.dataset.manual) return;
+  const t=new Date(d); t.setFullYear(t.getFullYear()+1);
+  r.value=t.toISOString().split('T')[0];
+}
+['rb_revac','zb_revac'].forEach(id=>document.addEventListener('DOMContentLoaded',()=>{const e=document.getElementById(id); if(e) e.addEventListener('input',()=>{e.dataset.manual='1'});}));
+
 function copyForClaude(){
   const patientName = document.getElementById('patientName').value.trim()||'Nepoznat';
   const chiefComplaint = document.getElementById('chiefComplaint').value.trim();
@@ -769,10 +823,7 @@ function copyForClaude(){
     `MASA: ${document.getElementById('weight').value||'—'} kg`,
     `VLASNIK: ${document.getElementById('n_vlasnik')?.value||'—'}`,
     `VAKCINACIJA: ${document.getElementById('vaccination').value||'—'}`,
-    `VAKCINA_NAZIV: ${document.getElementById('vaccName').value||'—'}`,
-    `VAKCINA_SERIJA: ${document.getElementById('vaccSerial').value||'—'}`,
-    `VAKCINA_DATUM: ${document.getElementById('vaccDate').value||'—'}`,
-    `VAKCINA_ROK: ${document.getElementById('vaccExpiry').value||'—'}`,
+    ...vaccLines(),
     `TERAPIJA_TRENUTNA: ${document.getElementById('currentMeds').value||'—'}`,
     `RAZLOG: ${chiefComplaint||'—'}`,
     `ISTORIJA: ${document.getElementById('history').value||'—'}`,
@@ -922,7 +973,8 @@ function calcDose(i){
 function clearAll(){
   if(!confirm('Obrisati sve podatke?')) return;
   ['species','sex','vaccination'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  ['patientName','age','breed','weight','chiefComplaint','currentMeds','history','extraNotes','n_vlasnik','vaccName','vaccSerial','vaccDate','vaccExpiry'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['patientName','age','breed','weight','chiefComplaint','currentMeds','history','extraNotes','n_vlasnik','rb_naziv','rb_serija','rb_datum','rb_rok','rb_revac','zb_tip','zb_naziv','zb_serija','zb_datum','zb_rok','zb_revac'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  ['rb_revac','zb_revac'].forEach(id=>{const e=document.getElementById(id); if(e) delete e.dataset.manual;});
   EXAM_FIELDS.forEach(f=>{ const c=document.getElementById(f.chk),v=document.getElementById(f.val); if(c)c.checked=false; if(v)v.value=''; });
   images=[]; renderImages(); lastHash=null; lastResultData=null;
   clearPatient();
@@ -951,13 +1003,6 @@ function showToast(msg,type='success'){
    PWA INSTALL LOGIC
 ══════════════════════════════════════════ */
 let deferredPrompt = null;
-
-// Set today as default vaccine date
-document.addEventListener('DOMContentLoaded', () => {
-  const today = new Date().toISOString().split('T')[0];
-  const vd = document.getElementById('vaccDate');
-  if(vd && !vd.value) vd.value = today;
-});
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
